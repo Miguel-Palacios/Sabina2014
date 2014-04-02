@@ -1,0 +1,505 @@
+#ifndef _SHAREDMEMORY_H
+#define _SHAREDMEMORY_H
+
+#include "ConfigFile.h"
+
+
+#include "Location.h"
+#include <string>
+using namespace std;
+#include <list>
+using namespace std;
+#include "Laser.h"
+#include "PTZ.h"
+#include "Map.h"
+#include "Arm.h"
+#include "Voice.h"
+#include "Synthesis.h"
+#include "Destination.h"
+
+#include "Kinect.h"
+
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include "Objective.h"
+
+//class Objective;
+
+///*! \brief  Singleton instance of the robots shared memory
+// *
+// *  This object is a singleton that contains all the relevant information of
+// *  the robot. This information is just a reference to share information it
+// *  has no real acces to the hardware, and it is only used by the modules
+// *  to share information. <b>So the information contained here could
+// *  be wrong if a module dosnt update corectly.</b> Information about
+// * the way singletons work is available in designe paterns books
+// */
+class SharedMemory {
+  
+protected:
+    ///*! \brief Private constructor
+    // *
+    // *  The constructor has to be private or protected so the singleton patern works
+    // */
+    SharedMemory();
+    
+private:
+    static SharedMemory * m_singleton;
+    
+    ///*! \brief String containing the action selected by the MDP
+    // *
+    // *  String with the name of the optimal action selected by the MDP.
+    // */
+    string * mdpAction;
+    
+    string *requestedObject;
+
+    ///*! \brief Boolean true if main system has started
+    // *
+    // *  Used to indicate the plugins that all subsystems have started
+    // */
+    
+    ///*! \brief Port that aria will use
+    // *
+    // *  Path of the port that will be used by Aria to comunicate with the robots hardware
+    // */
+    std::string *ariaPort;
+
+    ///*! \brief Port that the laser will use
+    // *
+    // *  Path of the port that will be used to conect to the laser
+    // */
+    std::string *laserPort;
+
+    ///*! \brief Port for PTZ control
+    // *
+    // *  PTZ control port for panning tilting and zooming
+    // */
+    std::string *PTZ_port;
+    
+        ///*! \brief Lineal velocity of the robot
+    // *
+    // *  Contains the velocity for lineal motion aka. forwards/backwards in meters/second
+    // */
+    float linealVelocity;
+
+    ///*! \brief Angular velocity of the robot
+    // *
+    // *  Contains the velocity for rotation aka. left/right in radians/second
+    // */
+    float angularVelocity;
+    
+     ///*! \briedoCalibrationf Position of the robot
+    // *
+    // *  Location of the robot on the map x, y, angle,
+    // */
+    Location robotPosition;
+    
+     ///*! \brief Contains the name of the destination where the robot should travel
+    // *
+    // *  Contains the name of the destination where the robot should travel.
+    // */
+    string * currentDestination;
+    
+       ///*! \brief List of point that the robot will travel
+    // *
+    // *  List of Locations (x, y, angle) that define the path the robot should travel. After the robot gets
+    // *  to a Location it should be removed from the list.
+    // */
+    list<Location> *route;
+    
+    int objectPositionX;
+    int objectPositionY;
+    
+    double realObjectPositionX;
+    double realObjectPositionY;
+    double realObjectPositionZ;
+    
+       // *
+    // *  A destination in string as Living, Exit,... .
+    // */
+    string *stringDestination ;
+    
+    string *testRunning;
+     // Reading from kinect position where a gesture was detected
+    int gestureDepthPosition ;
+    
+    int numberOfusersToLearn;
+    
+    
+public:
+  
+    bool mainSystem;
+    bool localized;
+
+    bool seguir;
+
+    int testTime;
+    int exitTime;
+
+    int faceFrame;
+    
+    ///*! \brief List of known places on the map
+    // *
+    // *  List of places on the map Name indicates the name of the place on the map
+    // *  (the name has to be unique)
+    // */
+    map<string, Destination> *destinations;
+
+    ///*! \brief List of known Objectives on the map
+    // *
+    // *  List of Objectives on the map Name indicates the name the objective
+    // *  Type indicates if it is an object or a person
+    // *  Visual_ID is the reference of the vision system
+    // *  Last_x, Last_y indicate the last coordinates the object was seen (it could have moved)
+    // *  (the name has to be unique)
+    // */
+    map<string, Objective> *objectives;
+
+    ///*! \brief Contains the name of the last seen object
+    // *
+    // *  Contains the name of the last seen object.
+    // */
+    //
+   Objective *lastObjective;
+   
+   vector<Objective> *users;
+
+   
+    string * prevDestination;
+    
+
+    Laser *laser;
+    ///*! \brief Poiter to the PTZ information
+    // *
+    // *
+    // */
+    PTZ ptzDevice;
+    
+    Kinect *kinectInfo;
+  
+    ///*! \brief Contains a poiter to the map the robot is using
+    // *
+    // *
+    // */
+    Map enviroment;
+
+    ///*! \brief Pointer to the Arm object
+    // *
+    // *
+    // */
+    Arm armDevice;
+
+    ///*! \brief Pointer to the voice recognition object
+    // *
+    // *
+    // */
+    //Voice Microphone;
+
+    
+    ///*! \brief Pointer to the Synthesis object
+    // *
+    // *
+    // */
+    Synthesis sintetizer;
+    
+     // *
+    // *  Current location of the robot estimated by the MRPT localization module (in meters) or by ARNL .
+    // */
+    Location estimatedPosition;
+
+   ///*! \brief Starts the singleton
+    // *
+    // *  Starts the singleton similar to a constructor. Its the only way to set initial values
+    // *  since the constructor is private. The initial values are read from the a configuration
+    // *  file given by filename
+    // */
+    void Initialize(string filename);
+
+    ///*! \brief Returns a pointer to the Robot object
+    // *
+    // *  Returns a pointer to the only drinkcopy in memory of the Robot object. If no object exist it
+    // *  will initialize the instance befor returning the pointer \return Robot
+    // */
+    SharedMemory & getInstance();
+
+    ///*! \brief Gets the position of the robot
+    // *
+    // *  Gets the position of the robot (x, y, angle) \return Position
+    // */
+    Location getRobotPosition();
+
+    ///*! \brief Sets the position of the robot
+    // *
+    // *  Sets the position of the robot (x, y, angle)
+    // */
+    void setRobotPosition(Location value);
+
+    ///*! \brief Gets the Lineal velocity of the robot
+    // *
+    // *  Gets the Lineal velocity of the robot \return Lineal_velocity
+    // */
+    float getLinealVelocity();
+
+    ///*! \brief Sets the Lineal velocity of the robot
+    // *
+    // *  Sets the Lineal velocity of the robot
+    // */
+    void setLinealVelocity(float value);
+
+    ///*! \brief Gets the Angular velocity of the robot
+    // *
+    // *  Gets the Angular velocity of the robot \return Angular_velocity
+    // */
+    float getAngularVelocity();
+
+    ///*! \brief Sets the Angular velocity of the robot
+    // *
+    // *  Sets the Angular velocity of the robot
+    // */
+    void setAngularVelocity(float value);
+
+    ///*! \brief Gets the name of the destination
+    // *
+    // *  Gets the name of the destination of the robot. There is no safty check to see if the
+    // *  destination exists \return Current_destination
+    // */
+    string getCurrentDestination();
+
+    ///*! \brief Sets the name of the destination
+    // *
+    // *  Sets the name of the destination of the robot. There is no safty check to see if the
+    // *  destination exists
+    // */
+    void setCurrentDestination(string value);
+
+
+    void setPrevDestination(string value);
+   
+    ///*! \brief Gets the name of last seen of the last seen object
+    // *
+    // *  Gets the name of last seen of the last seen object. There is no safty check to
+    // *  see if the name of the object exists \return Last_objective
+    // */
+    //string getLastObjective();
+    Objective getLastObjective();
+
+    ///*! \brief Sets the name of last seen of the last seen object
+    // *
+    // *  Sets the name of last seen of the last seen object. There is no safty check to
+    // *  see if the name of the object exists.
+    // */
+    //void setLastObjective(string value);
+    void setLastObjective(const Objective &value);
+
+    ///*! \brief Gets the route of the robot
+    // *
+    // *  Gets a list of Locations that form the route or path  \return Route
+    // */
+    list<Location> & getRoute();
+
+    ///*! \brief Sets the route of the robot
+    // *
+    // *  Sets a list of Locations that form the route or path.
+    // */
+    void setRoute(list<Location>  value);
+
+    ///*! \brief Gets the name of the action decided by the MDP
+    // *
+    // *   Gets the name of the action decided by the MDP \return Action
+    // */
+    string getAction();
+
+    ///*! \brief Sets the name of the action decided by the MDP
+    // *
+    // *   Sets the name of the action decided by the MDP
+    // */
+    void setAction(string value);
+    
+        ///*! \brief Gets the requested object by the user
+    // *
+    // *   Gets the name of the action decided by the MDP \return Action
+    // */
+    string getRequestedObject();
+
+    ///*! \brief Sets the name of the requested object by the user
+    // *
+    // *   Sets the name of the action decided by the MDP
+    // */
+    void setRequestedObject(string value);
+
+    ///*! \brief Adds a location to the Route
+    // *setGestureDepthPosition(int value)
+    // *  Adds a location to the end of the list of locations containd in Route
+    // */
+    void addLocationToPath(const Location & location);
+
+    ///*! \brief Loads the list of known locations from file
+    // *
+    // *  Loads the list of known locations from file \return false if file not found
+    // */
+    bool loadDestinations(string filename);
+
+    ///*! \brief Deletes a location to the Route
+    // *
+    // *  Deletes the first element of the Route list
+    // */
+    void deleteLocationFromPath();
+
+    ///*! \brief Clears the Route
+    // *
+    // *  Clears all elements in the Route list. Used with Aria/mrpt navigation only.
+    // */
+    void clearPath();
+
+
+    string getAriaPort();
+    void setAriaPort(string value);
+
+    string getLaserPort();
+    void setLaserPort(string value);
+
+    string getPTZPort();
+    void setPTZPort(string value);
+
+    ///*! \brief Sets the estimated position of the robot
+    // *
+    // *  Sets the Angular velocity of the robot. Used with Aria/mrpt navigation only.
+    // */
+//     void setEstimatedPosition(Location newPosition);
+    
+      ///*! \brief Sets the object position (X)
+    // *
+    // *  Sets the object position (X) in int
+    // */
+    void setObjectPositionX(int value);
+
+    ///*! \brief Gets the object position (X)
+    // *
+    // *  Sets the object position (X)
+    // */
+    int getObjectPositionX();
+    
+      ///*! \brief Sets the object position (Y)
+    // *
+    // *  Sets the object position (X) in int
+    // */
+    void setObjectPositionY(int value);
+
+    ///*! \brief Gets the object position (Y)
+    // *
+    // *  Sets the object position (X)
+    // */
+    int getObjectPositionY();
+    
+    
+    ///*! \brief Sets the real object position (X)
+    // *
+    // *  Sets the real object position (X)
+    // */
+    
+    void setRealObjectPositionX(double value);
+
+    ///*! \brief Gets the real object position (X)
+    // *
+    // *  Sets the object position (X)
+    // */
+    double getRealObjectPositionX();
+    
+      ///*! \brief Sets the real object position (Y)
+    // *
+    // *  Sets the object position (X) in int
+    // */
+    void setRealObjectPositionY(double value);
+
+    ///*! \brief Gets the real object position (Y)
+    // *
+    // *  Sets the object position (X)
+    // */
+    double getRealObjectPositionY();
+    
+        ///*! \brief Sets the real object position (Z)
+    // *
+    // *  Sets the object position (X) in int
+    // */
+    void setRealObjectPositionZ(double value);
+
+    ///*! \brief Gets the real object position (Z)
+    // *
+    // *  Sets the object position (X)
+    // */
+    double getRealObjectPositionZ();
+    
+   ///*! \brief Gets the requested object by the user
+    // *
+    // *   Gets the name of the action decided by the MDP \return Action
+    // */
+    string getStringDestination();
+
+    ///*! \brief Sets the name of the requested object by the user
+    // *
+    // *   Sets the name of the action decided by the MDP
+    // */
+    void setStringDestination(string value);
+    
+      ///*! \brief Gets the requested object by the user
+    // *
+    // *   Gets the name of the action decided by the MDP \return Action
+    // */
+    string getTestRunning();
+
+    ///*! \brief Sets the test running;
+    // *
+    // *   Sets the name of the action decided by the MDP
+    // */
+    void setTestRunning(string value);
+    
+        ///*! \brief Gets the requested object by the user
+    // *
+    // *   Gets the name of the action decided by the MDP \return Action
+    // */
+    bool getActionCalibration();
+
+    ///*! \brief Sets the name of the requested object by the user
+    // *
+    // *   Sets the name of the action decided by the MDP
+    // */
+    void setActionCalibration(bool value);
+    
+        ///*! \brief Gets the requested object by the user
+    // *
+    // *   Gets the name of the action decided by the MDP \return Action
+    // */
+    int getGestureDepthPosition();
+
+    ///*! \brief Sets the name of the requested object by the user
+    // *
+    // *   Sets the name of the action decided by the MDP
+    // */
+    void setGestureDepthPosition(int value);
+    
+          ///*! \brief Gets the requested object by the user
+    // *
+    // *   Gets the number of user to learn in Coktail Party
+    // */
+    int getNumberOfUsersToLearn();
+
+    ///*! \brief Sets the name of the requested object by the user
+    // *
+    // *   Gets the number of user to learn in Coktail Party
+    // */
+    void setNumberOfUsersToLearn(int value);
+    
+    ///*! \brief Add a user to the users list
+    // *
+    // *   Gets the number of user to learn in Coktail Party
+    // */
+    void addUser(const Objective &value);
+    
+    ///*! \brief Gets the i user from the user list
+    // *
+    // *   Gets the number of user to learn in Coktail Party
+    // */
+    Objective getUser(int i);
+};
+#endif

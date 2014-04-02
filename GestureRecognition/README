@@ -1,0 +1,33 @@
+Gesture Class README.
+Coded by LuisGIII
+
+Please read before start!
+
+Gesture Class is a hand tracking implementation using NITE and OpenNI.
+
+The gestures implemented in this class are coded inside HandControl.cpp
+
+Gestures:
+Hand Up
+Hand to the Right
+Hand to the Left
+Hand in the middle
+
+To be recognized by this implementation you MUST do a focus gesture before.
+In this case Waving your hand, but you can change it if you edit
+HandControl.cpp to "Click" or "RaiseHand".
+
+This class depends of NITE 1.3 and OpenNI 1.5.2.23 and you should add
+a file named Sample-Tracking.xml to the build path (now it's located
+inside the build folder)
+
+Way of use:
+
+- Declaration of Object HandControl.
+- Initiation of Hand Recognizer.
+- Run Hand Recognizer.
+- Get String gestures.
+- When you finish Delete Session for memory purposes.
+
+Any doubt in the future or present please contact me to:
+loiis.x14@gmail.com

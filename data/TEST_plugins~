@@ -1,0 +1,8 @@
+./lib/libFaceRecognition.so 
+./lib/libGestureRecognition.so 
+./lib/libKinect.so  
+./lib/libVision_Objects.so  
+./lib/libManipulation.so     
+./lib/libNavigationClient.so         
+./lib/libVoiceRecognitionServer.so        
+./lib/libVoiceSynthesis.so

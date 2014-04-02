@@ -1,0 +1,11 @@
+#include <alsa/asoundlib.h>
+#include <alsa/pcm.h>
+#include <math.h>
+#define BUFFER_LEN 88000
+
+//static char *device = "default";                       //soundcard
+static char device[] = "default";
+snd_output_t *output = NULL;
+float buffer [BUFFER_LEN];
+
+void beepStartSpeech();
