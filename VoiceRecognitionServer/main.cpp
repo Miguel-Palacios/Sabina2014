@@ -315,7 +315,7 @@ string LoopStart(char *request, NetThread *net)
  * @brief Net_server plugin
  *
  * This plugin is a network server that accepts client conections to comunicate with other programs (running on the same computer or over the network)
- * @author     Patrick Heyer, ickhey@prodigy.net.mx, Juan Herrera juan_antonio_@hotmail.com, Manuel Oropeza zodiacanimations@msn.com
+ * @author     Patrick Heyer, ickhey@prodigy.net.mx, Juan Herrera juan_antonio_@hotmail.com, Manuel OropwaitForAmbulanceeza zodiacanimations@msn.com
  * @date       jul 04, 2012
  * @version    1.0
  **/
@@ -524,12 +524,14 @@ void VoiceRecognitionServer::Main()
 			
 			sharedMemory->getInstance().lastObjective->setName(name);
 			sharedMemory->getInstance().lastObjective->setOrder(drink);
+			
 			Objective *tempObjective = new Objective();
 			tempObjective->setName(sharedMemory->getInstance().lastObjective->getName());
-			tempObjective->setObjectivePosition(sharedMemory->getInstance().lastObjective->getObjetivePosition());
+			//tempObjective->setObjectivePosition(sharedMemory->getInstance().lastObjective->getObjetivePosition());
 			tempObjective->setOrder(sharedMemory->getInstance().lastObjective->getOrder());
 			tempObjective->setType(sharedMemory->getInstance().lastObjective->getType());
 			tempObjective->setVisualID(sharedMemory->getInstance().lastObjective->getVisualID());
+			//TEST
 			//se le guarda la posición del robot y no del kinect al momento de tomar una orden ya esta enfrente del usuario
 			tempObjective->setObjectivePosition(sharedMemory->getInstance().getRobotPosition());
 			//sharedMemory->getInstance().lastObjective;
@@ -547,7 +549,9 @@ void VoiceRecognitionServer::Main()
 			  numberOfUsersToLearn=0;
 			  sharedMemory->getInstance().setAction("navigateToObject");
 			}else{
-			  sharedMemory->getInstance().setAction("userLearn");
+			  //debe ser dinámico el lugar donde es la fiesta
+			  sharedMemory->getInstance().setStringDestination("Living");
+			  sharedMemory->getInstance().setAction("navigate");
 			  
 			}
 				

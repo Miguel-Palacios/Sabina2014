@@ -32,14 +32,16 @@
 
 char textData[64];
 char currentGoal[64];
+vector<int> headingsForBedroom;
+vector<int> headingsForLiving;
+int indexHeading=0;
+
 bool openDoor = false;
-// int robotXPosition = 0;
 // int robotYPosition = 0;
 // double robotThPosition = 0.0;
 SharedMemory *sharedMemory;
 bool voiceRecognizerSelection=false;
 Location tempLocation;
-
 
 void handlePathPlannerStatus(ArNetPacket *packet) {
   char buf[64];
@@ -106,7 +108,6 @@ void handleSensorCurrent(ArNetPacket *packet) {
 
   float distance = 0.0;
   float minDistance = 5000.0;
-
 	// nreadings = packet -> bufToByte2();
 	//printf("Number of readings: %d\n", nreadings);
 
@@ -236,7 +237,18 @@ void NavigationClient::Main()
 		 
   ArClientSimpleConnector clientConnector(&parser);
   parser.loadDefaultArguments();
-
+  
+  headingsForBedroom.push_back(45);
+  headingsForBedroom.push_back(25);
+  headingsForBedroom.push_back(0);
+  
+ 
+  headingsForLiving.push_back(-20);
+  headingsForLiving.push_back(-55);
+  headingsForLiving.push_back(-80);
+  headingsForLiving.push_back(-110);
+  headingsForLiving.push_back(-140);
+  
   openDoor = false;
   if (!clientConnector.parseArgs() || !parser.checkHelpAndWarnUnparsed()) {
     clientConnector.logOptions();
@@ -281,12 +293,13 @@ void NavigationClient::Main()
   }
 
   printf("*** Door has been OPENED *** \n");
+  sleep(2);
 
   if (client.dataExists("localizeToPose")) {
 	  printf(".. Server does have \"localizeToPose\" request.\n");
-	  posePacket.byte4ToBuf(pose.getX());
-	  posePacket.byte4ToBuf(pose.getY());
-	  posePacket.byte4ToBuf(pose.getTh());
+	  posePacket.byte4ToBuf(sharedMemory->getInstance().getLocalizationRobotPosition().get_X());
+	  posePacket.byte4ToBuf(sharedMemory->getInstance().getLocalizationRobotPosition().get_Y());
+	  posePacket.byte4ToBuf(sharedMemory->getInstance().getLocalizationRobotPosition().get_Angle());
 	  
 	  client.requestOnce("localizeToPose", &posePacket);
 	  ArUtil::sleep(1500);
@@ -297,22 +310,31 @@ void NavigationClient::Main()
   
   for(;;){
 		string action = sharedMemory->getInstance().getAction();
-		
+			
 		if (action=="navigate"){
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
 		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
-		    if (sharedMemory->getInstance().getTestRunning()=="Emergency")
-		      sharedMemory->getInstance().setAction("payAttention");
-		    else{
-		      //TODO realizar la búsqueda para detectar personas haciendo un ademán
-		      sharedMemory->getInstance().setAction("userLearn");
-		    }
+                   sharedMemory->getInstance().setAction("turn");
+		 
+			
+		}if (action=="navigateToParty"){
+		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
+		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
+                   sharedMemory->getInstance().setAction("turn");
+		 
 			
 		}
 		else if (action=="navigateBackToEmergency"){
+		    
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
+		    system("pdflatex ../data/EmergencyReport/EmergencyReport.tex");
 		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
+		    sleep(3);
+		    std::stringstream ss;
+		    ss << "cp ../data/EmergencyReport/EmergencyReport.pdf " << sharedMemory->getInstance().reportPath;
+		    system(ss.str().c_str());
 		    sharedMemory->getInstance().setAction("none");
+		    sharedMemory->sintetizer.set_Phrase("Emergency Situation resolved");
 
 			
 		}
@@ -343,12 +365,15 @@ void NavigationClient::Main()
 		  sharedMemory->getInstance().setAction("requestQuestions");
 		}
 		else if (action=="navigateToObject"){
+		  //solo es utilizado por cocktail Party
+		  //Si se quita la indicación de lugar en requestOptions aqui debe mandarse el destino predefinido (kitchen?)
 		  cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl;  
 		  navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
 		  sharedMemory->getInstance().setAction("recognizeObject");
 		}
 		else if (action=="navigateToObjectCategory"){
-		  cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl;  
+		  cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl; 
+		  //por default ahorita esta dining como el la categoria del objeto
 		  navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
 		  if (sharedMemory->getInstance().getTestRunning()=="pick and place")
 		    sharedMemory->getInstance().setAction("deliverObject");
@@ -358,22 +383,23 @@ void NavigationClient::Main()
 		}else if (action=="navigateToPoint"){
 		    
 		    cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl;  
+		    //TODO verificar que esto limpia el objeto
 		    posePacket.empty();
-		    posePacket.byte4ToBuf(GoToPose.getX());
-		    posePacket.byte4ToBuf(GoToPose.getY());
-		    posePacket.byte4ToBuf(GoToPose.getTh());
-
+		    posePacket.byte4ToBuf(sharedMemory->getInstance().lastObjective->getObjetivePosition().get_X());
+		    posePacket.byte4ToBuf(sharedMemory->getInstance().lastObjective->getObjetivePosition().get_Y());
+		    posePacket.byte4ToBuf(sharedMemory->getInstance().lastObjective->getObjetivePosition().get_Angle());
+		    cout << "Enviando punto a navegación: "<< sharedMemory->getInstance().lastObjective->getObjetivePosition().get_X() << "," << sharedMemory->getInstance().lastObjective->getObjetivePosition().get_Y() << "," << sharedMemory->getInstance().lastObjective->getObjetivePosition().get_Angle()<<endl;
 		    client.requestOnce("gotoPose", &posePacket);
 		  
 		    sleep(10);
 		    printf("Before while Navigation");
-		  while (strncmp(textData, "Arrived at", 10) != 0){
+		    while (strncmp(textData, "Arrived at", 10) != 0){
 			sleep(10);
-		 }
+		    }
 		 
-		  printf("Navigation ended");
+		    printf("Navigation ended");
 	    
-		   // sharedMemory->getInstance().setAction("waitForAmbulance");
+		   sharedMemory->getInstance().setAction("userLearn");
 	
 		}else if (action=="navigateForward"){
 		  
@@ -391,17 +417,62 @@ void NavigationClient::Main()
 		  sharedMemory->getInstance().setAction("turn");
 		}else if (action=="turn"){
 		  
+		  int heading=0;
 		  stringstream command;
-                  cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl;  
-		  command<<"12 " << 90;
-		  cout<< "******  ROTAR "<<command.str().c_str()<<" mm"<<endl;
-		  client.requestOnceWithString("MicroControllerMotionCommand",command.str().c_str());
-		  sleep(10);
-		  printf("Before while Navigation");
-		  while (strncmp(textData, "Stopped", 10) != 0){
-			sleep(10);
+                  cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl;
+		  if (sharedMemory->getInstance().startDownToRotations==false){
+		    if (sharedMemory->getInstance().getStringDestination()=="bedroom"){
+		      if (indexHeading < headingsForBedroom.size()){
+			heading=headingsForBedroom[indexHeading];
+			indexHeading++;
+		      }else{
+			sharedMemory->getInstance().startDownToRotations=true;
+			indexHeading=headingsForBedroom.size()-2;
+			heading=(-1000);//valor dado para detectar que no se obtuvo un valor válido para el heading, dado que se cambia la forma en como se recorre el arreglo
+		      }
+		    }else if (sharedMemory->getInstance().getStringDestination()=="living"){
+		      if (indexHeading < headingsForLiving.size()){
+			heading=headingsForLiving[indexHeading];
+			indexHeading++;
+		      }else{
+			sharedMemory->getInstance().startDownToRotations=true;
+			indexHeading=headingsForLiving.size()-2;//no menos uno porque ya el proceso anterior permition visitar este indice
+			heading=(-1000);
+		      }
+		    }
+		    
+		  }else{
+		    if (sharedMemory->getInstance().getStringDestination()=="bedroom"){
+		      if (indexHeading >= 0){
+			heading=headingsForBedroom[indexHeading];
+			indexHeading--;
+		      }else{
+			sharedMemory->getInstance().startDownToRotations=false;
+			indexHeading=1;
+			heading=(-1000);
+		      }
+		    }else if (sharedMemory->getInstance().getStringDestination()=="living"){
+		      if (indexHeading>= 0){
+			heading=headingsForLiving[indexHeading];
+			indexHeading--;
+		      }else{
+			sharedMemory->getInstance().startDownToRotations=false;
+			indexHeading=1;//no 0 porque ya el proceso anterior permitió visitar este indice
+			heading=(-1000);
+		      }
+		    }
 		  }
-		 sharedMemory->getInstance().setAction("none"); 
+		    //else if (sharedMemory->getInstance().getStringDestination()=="living")
+		      //increment=40;
+		  if (heading>(-1000)){
+		    command<<"12 " << heading;
+		    cout<< "******  ROTAR "<<command.str().c_str()<<" grades"<<endl;
+		    sharedMemory->getInstance().sintetizer.set_Phrase("If you need something, please wave your hand to my bottom kinect");
+	            sleep(2);
+		    client.requestOnceWithString("MicroControllerMotionCommand",command.str().c_str());
+		    cout<<"*INVERSA al hacer el heading: "<< inversa << endl;
+		    sharedMemory->getInstance().setAction("payAttention"); 
+		  }
 		}else if (action=="navigateToExit"){
 		    //éste estado solo llamarlo para terminar la prueba
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
@@ -429,3 +500,4 @@ void NavigationClient::stop()
 {
 	
 }
+

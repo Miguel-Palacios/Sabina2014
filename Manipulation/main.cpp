@@ -123,6 +123,7 @@ void Manipulacion::Main()
 	      sharedMemory->getInstance().setAction("navigateToObjectCategory");
 	    }else if (sharedMemory->getInstance().getTestRunning()=="CocktailParty"){
 	      //TODO destino predefinido hay que cambiarlo según la prueba, puede establecerse desde el archivo de configutación
+	      //o segun el punto donde encontró al usuario.
 	      sharedMemory->getInstance().setStringDestination("living");
 	      sharedMemory->getInstance().setAction("navigateToObjectCategory");
 	    }else{

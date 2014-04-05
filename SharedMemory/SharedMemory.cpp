@@ -35,6 +35,8 @@ bool doCalibration_escribible=true;
 bool gestureDepthPosition_escribible=true;
 bool numberOfUsersToLearn_escribible=true;
 bool usersList_escribible=true;
+bool currentUserIndex_escribible=true;
+bool localizationRobotPosition_escribible=true;
 
 bool doCalibration=false;
 
@@ -114,17 +116,20 @@ void SharedMemory::Initialize(string filename) {
     string temp_string;
     config.readInto( getInstance().mainSystem, "Main_system" );
 
+    //TODO robot position cambiará apenas se mueva el robot, mientras que localizationRobotPosition permanecerá constante
     config.readInto( temp_int, "Position_x" );
     getInstance().robotPosition.set_X(temp_int);
+    getInstance().localizationRobotPosition.set_X(temp_int);
 
     config.readInto( temp_int, "Position_y" );
     getInstance().robotPosition.set_Y(temp_int);
+    getInstance().localizationRobotPosition.set_Y(temp_int);
 
     config.readInto( temp_float, "Position_angle" );
     getInstance().robotPosition.set_Angle(temp_float);
-
-
-	//For restaurant and followme test only
+    getInstance().localizationRobotPosition.set_Angle(temp_float);
+    
+    //For restaurant and followme test only
     config.readInto( getInstance().linealVelocity, "Lineal_velocity" );
     config.readInto( getInstance().angularVelocity, "Angular_velocity" );
 
@@ -184,7 +189,11 @@ void SharedMemory::Initialize(string filename) {
     getInstance().gestureDepthPosition=0 ;
     getInstance().numberOfusersToLearn=0;
     getInstance().users= new vector<Objective>();
-  
+   
+    config.readInto( temp_string, "reportPath" );
+    getInstance().reportPath=new string;
+    *getInstance().reportPath=temp_string;
+    getInstance().startDownToRotations=false;
 
 }
 
@@ -219,6 +228,8 @@ Location SharedMemory::getRobotPosition() {
     return temp;
 }
 
+
+
 ///*! \brief Sets the position of the robot
 // *
 // *  Sets the position of the robot (x, y, angle)
@@ -229,6 +240,32 @@ void SharedMemory::setRobotPosition(Location value) {
     Position_escribible=false;
     robotPosition = value;
     Position_escribible=true;
+}
+
+///*! \brief Sets the position where the robot should be localized (x, y, angle)
+// *
+// *  Sets the position where the robot should be localized (x, y, angle)
+// */
+void SharedMemory::setLocalizationRobotPosition(Location value) {
+    {
+    } while (!localizationRobotPosition_escribible);
+    localizationRobotPosition_escribible=false;
+    localizationRobotPosition = value;
+    localizationRobotPosition_escribible=true;
+}
+
+///*! \brief Gets the position where the robot should be localized
+// *
+// *  Gets the position where the robot should be localized (x, y, angle) \return Position
+// */
+Location SharedMemory::getLocalizationRobotPosition() {
+    //{
+    //} while (!Position_escribible);
+    //Position_escribible=false;
+    Location temp=localizationRobotPosition;
+    //Position_escribible=true;
+
+    return temp;
 }
 
 ///*! \brief Gets the Lineal velocity of the robot
@@ -416,7 +453,8 @@ void SharedMemory::addLocationToPath(const Location & location) {
 ///*! \brief Loads the list of known locations from file
 // *
 // *  Loads the list of known locations from file \return false if file not found
-// */
+// */    string test = "hola";
+   
 bool SharedMemory::loadDestinations(string filename) {
 }
 
@@ -657,4 +695,19 @@ Objective SharedMemory::getUser(int i)
 {
 return users->at(i);
 }
+void SharedMemory::setCurrentUserIndex(int value)
+{
+  do
+    {
+    } while (!currentUserIndex_escribible);
+    currentUserIndex_escribible=false;
+    currentUserIndex = value;
+    currentUserIndex_escribible=true;
+}
+int SharedMemory::getCurrenUserIndex()
+{
+return currentUserIndex;
+}
+
+
 

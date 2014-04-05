@@ -89,11 +89,17 @@ private:
     // */
     float angularVelocity;
     
-     ///*! \briedoCalibrationf Position of the robot
+     ///*! \brief
     // *
-    // *  Location of the robot on the map x, y, angle,
+    // *  Odometric location of the robot x, y, angle,
     // */
     Location robotPosition;
+    
+       ///*! \brief
+    // *
+    // *  Odometric location of the robot x, y, angle,
+    // */
+    Location localizationRobotPosition;
     
      ///*! \brief Contains the name of the destination where the robot should travel
     // *
@@ -126,10 +132,15 @@ private:
     
     int numberOfusersToLearn;
     
+    int currentUserIndex;
+    
+    
+    
     
 public:
   
-    bool mainSystem;
+  string *reportPath;  
+  bool mainSystem;
     bool localized;
 
     bool seguir;
@@ -138,6 +149,8 @@ public:
     int exitTime;
 
     int faceFrame;
+    
+    bool startDownToRotations;
     
     ///*! \brief List of known places on the map
     // *
@@ -225,15 +238,28 @@ public:
 
     ///*! \brief Gets the position of the robot
     // *
-    // *  Gets the position of the robot (x, y, angle) \return Position
+    // *  Gets the odometric position of the robot (x, y, angle) \return Position
     // */
     Location getRobotPosition();
 
     ///*! \brief Sets the position of the robot
     // *
-    // *  Sets the position of the robot (x, y, angle)
+    // *  Sets the odometric position of the robot (x, y, angle)
     // */
     void setRobotPosition(Location value);
+    
+    
+    ///*! \brief Gets the position of the robot
+    // *
+    // *  Gets the odometric position of the robot (x, y, angle) \return Position
+    // */
+    Location getLocalizationRobotPosition();
+
+    ///*! \brief Sets the position of the robot
+    // *
+    // *  Sets the odometric position of the robot (x, y, angle)
+    // */
+    void setLocalizationRobotPosition(Location value);
 
     ///*! \brief Gets the Lineal velocity of the robot
     // *
@@ -492,14 +518,27 @@ public:
     
     ///*! \brief Add a user to the users list
     // *
-    // *   Gets the number of user to learn in Coktail Party
+    // *   Add a new objective user to learn in Coktail Party
     // */
     void addUser(const Objective &value);
     
     ///*! \brief Gets the i user from the user list
     // *
-    // *   Gets the number of user to learn in Coktail Party
+    // *   Gets the user with index i learnd in Coktail Party
     // */
     Objective getUser(int i);
+    
+        ///*! \brief Add a user to the users list
+    // *
+    // *   Sets the index (in the list of users) of the user attending or learning 
+    // */
+    void setCurrentUserIndex(int value);
+    
+    ///*! \brief Gets the i user from the user list
+    // *
+    // *   Gets the index (in the list of users) of the user attending or learning 
+    // */
+    int getCurrenUserIndex();
 };
 #endif
+

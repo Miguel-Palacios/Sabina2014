@@ -391,8 +391,6 @@ void Kinect_Plugin::Main()
 
         
         if(patrol->getInstance().getAction()=="payAttention")
-        //string actio = "payAttention";
-	//if(actio=="payAttention")  
         {
           cout<<"Starting: "<<patrol->getInstance().getAction() << " STATE in Kinect"<<endl;  
            if(Human::getInstance().gesture_detected)

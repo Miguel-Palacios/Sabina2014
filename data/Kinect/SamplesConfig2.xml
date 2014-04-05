@@ -59,7 +59,7 @@
 			</Query>
 			<Configuration>
 				
-<!-- 				<MapOutputMode xRes="640" yRes="480" FPS="15"/>  -->
+<!-- 				<MapOutputMode xRes="640" yRes="480" FPS="30"/>  -->
 				<MapOutputMode xRes="1280" yRes="1024" FPS="15"/> 
 			
 

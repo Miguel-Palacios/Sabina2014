@@ -241,15 +241,11 @@ int main ( int argc, char *argv[] )
     //TEST     para probar reconocimiento de rostros
    //sharedMemory->getInstance().setAction("userLearn");
     
-    //para probar navegación hacia adelante
-   // sharedMemory->getInstance().setAction("navigateForward");
-    //sharedMemory->getInstance().setGestureDepthPosition(1500);
-  
-    
-   // sharedMemory->getInstance().setAction("payAttention");
+   //TEST para probar reconocimiento de gesto 
+   //  sharedMemory->getInstance().setAction("payAttention");
     //sharedMemory->getInstance().setAction("reconocer_objetor");
      sharedMemory->getInstance().mainSystem = true;
-     sharedMemory->getInstance().setRequestedObject("coke");
+     sharedMemory->getInstance().setRequestedObject("water");
 //     //Debe ser leido desde el archivo de configuración
      sharedMemory->getInstance().setNumberOfUsersToLearn(2);
      sharedMemory->getInstance().setActionCalibration(doCalibration);

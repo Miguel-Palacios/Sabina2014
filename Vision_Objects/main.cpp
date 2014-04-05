@@ -79,8 +79,7 @@ void Vision_Objects::Main()
     cv::Mat cutout;
 
     std::stringstream ss;
-    string test = "hola";
-   
+
     
     //cout<<sharedMemory->getInstance().requestedObject->c_str()<<endl;
     //printf(sharedMemory->getInstance().requestedObject->c_str());
@@ -106,17 +105,22 @@ void Vision_Objects::Main()
 	  //TODO revisar posición de esta instrucción
 	  //Se indica a memoria compartida la orden que se esta atendiendo
 	  
-	  sharedMemory->getInstance().setLastObjective(sharedMemory->getInstance().getUser(userOrder));
-	  cout<< "***USER: "<< userOrder<<" Name: "<< sharedMemory->getInstance().getUser(userOrder).getName()<<" Order: "<< sharedMemory->getInstance().getUser(userOrder).getOrder()<<endl;
 	  if(newobject)
 	  {
 	    ss.str("");
-	  //ss << "../data/Objects/" << sharedMemory->getInstance().getRequestedObject() << "/";
-          ss << "../data/Objects/" << sharedMemory->getInstance().getLastObjective().getOrder() << "/";
-	  cout<< ss.str().c_str()<<endl;
-	  OrbObject.TrainingSet(ss.str().c_str());
-	  newobject=false;
-	  }
+	    if (sharedMemory->getInstance().getTestRunning()=="CocktailParty")
+	    {
+	      sharedMemory->getInstance().setLastObjective(sharedMemory->getInstance().getUser(userOrder));
+	      cout<< "***USER: "<< userOrder<<" Name: "<< sharedMemory->getInstance().getUser(userOrder).getName()<<" Order: "<< sharedMemory->getInstance().getUser(userOrder).getOrder()<<endl;
+	      ss << "../data/Objects/" << sharedMemory->getInstance().getLastObjective().getOrder() << "/";
+	    }
+	    else
+	       ss << "../data/Objects/" << sharedMemory->getInstance().getRequestedObject() << "/";
+          
+	    cout<< ss.str().c_str()<<endl;
+	    OrbObject.TrainingSet(ss.str().c_str());
+	    newobject=false;
+	    }
 	  
 
             cv::RNG rng(12345);
@@ -173,6 +177,7 @@ void Vision_Objects::Main()
                     cv::imshow("cutout",cutout);
                     std::cout << "ultima altura " << boundRect[i].height << "ultimo ancho " << boundRect[i].width << std::endl;
                     cv::waitKey(100);
+		    std::cout << "despues de WAIT"<< std::endl;
                     if(OrbObject.evalWindow(cutout))
                     {
                        cv::rectangle(kinect_rgb, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0);
@@ -195,17 +200,17 @@ void Vision_Objects::Main()
 			sharedMemory->getInstance().setAction("computePoint");
 			
 			
-//                         std::stringstream pp;
-//                         pp<< "../data/positives/crop" << conta << ".png";
-//                         conta++;
-//                         cv::imwrite(pp.str().c_str(), cutout);
+                        std::stringstream pp;
+                        pp<< "../data/EmergencyReport/EmergencyObjectRequested.png";
+                         // conta++;
+                        cv::imwrite(pp.str().c_str(), cutout);
 //                         std::stringstream cc;
 //                         cc<< "../data/SI/Kine" << conta << ".png";
 //                         conta++;
 //                         cv::imwrite(cc.str().c_str(), kinect_rgb);
                     }
                     else {
-//                         std::cout << "NO ENCONTRE" << std::endl;
+                         std::cout << "NO ENCONTRE" << std::endl;
 //                         std::stringstream pp;
 //                         pp<< "../data/Objects/negatives/" << conta << ".png";
 //                         conta++;
@@ -226,3 +231,4 @@ void Vision_Objects::stop()
 {
 
 }
+

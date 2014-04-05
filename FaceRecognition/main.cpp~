@@ -139,9 +139,9 @@ void FaceRecognition::Main()
             //GUI::getInstance().Set_Active_Tab("FaceRecognition");
             int userID;
 	    cout<<"Starting: "<< action << "STATE in FaceRecognition"<<endl;  
-            sharedMemory->getInstance().sintetizer.set_Phrase("Hello i am sabina I am waiting for a new user please aproach me ");
-            sleep(4);
-	    sharedMemory->getInstance().sintetizer.set_Phrase("Please look at the camera with blue lights and do not move ");
+            sharedMemory->getInstance().sintetizer.set_Phrase("Hello i am sabina");
+            sleep(2);
+	    sharedMemory->getInstance().sintetizer.set_Phrase("Please look at the camera with blue lights, and do not move ");
             sleep(4);
             do
             {
@@ -155,7 +155,7 @@ void FaceRecognition::Main()
 	    //Se almacena el tipo, ID del usuario y posición actual donde lo vió el robot 
  	    sharedMemory->getInstance().lastObjective->setType("person");
 	    sharedMemory->getInstance().lastObjective->setVisualID(userID);
-	    sharedMemory->getInstance().lastObjective->setObjectivePosition(sharedMemory->getInstance().getRobotPosition());
+	    //sharedMemory->getInstance().lastObjective->setObjectivePosition(sharedMemory->getInstance().getRobotPosition());
 	    	    
             sharedMemory->getInstance().sintetizer.set_Phrase( "Ok i learnd your face. Thank you ");
             sleep(4);
@@ -184,7 +184,7 @@ void FaceRecognition::Main()
 
             } while(userRecognizedID==0 || userRecognizedID!=userTemp.getVisualID());
 	    
-	    cout<<"I found USER in ID "<< userRecognizedID<<endl;  
+	    cout<<"I found USER with ID "<< userRecognizedID<<endl;  
 
             std::stringstream ss;
 	    

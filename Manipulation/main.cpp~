@@ -187,8 +187,11 @@ void Manipulacion::Main()
 	      if (sharedMemory->getInstance().getNumberOfUsersToLearn()==sharedMemory->getInstance().getLastObjective().getVisualID()){
 		sharedMemory->getInstance().setStringDestination("Exit");
 		sharedMemory->getInstance().setAction("navigateTo");
-	      }else
-	      sharedMemory->getInstance().setAction("navigateToObject");
+	      }else{
+		  //TEST Destino predefinido en donde se encuentran los objetos
+		  sharedMemory->getInstance().setStringDestination("Kitchen");
+		  sharedMemory->getInstance().setAction("navigateToObject");
+	      }
 	      
 	    }else{
               phrase= sharedMemory->getInstance().getTestRunning()+" has been finished";

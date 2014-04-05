@@ -23,9 +23,37 @@
 #include <pwd.h>
 //#include "../MDP/MDP.h"
 
-SharedMemory *patrol;
+SharedMemory *sharedMemory;
+
+#define ORIGIN_X 56
+#define ORIGIN_Y 107
 
 #define DEG_TO_RAD 0.0174532925;
+clock_t t_ini, t_fin;
+bool firstTime= true;
+//Calcula un punto en el mapa con recout << "Robot Position: "<< robotx << "," << roboty << "," << robotth<<endl;specto a un punto del kinect (regresado por un gesto)
+Location getPointInMap(Location location){
+    float robotx=location.get_X();
+    float roboty=location.get_Y();
+    float robotth=location.get_Angle() * DEG_TO_RAD;
+
+    float humanx=Human::getInstance().gesture[2];//le reste 100 probando cque no vaya tan cerca de la persona
+    float humany=Human::getInstance().gesture[1]*-1;
+
+    float X=robotx+(((humanx*cos(robotth))-(humany*sin(robotth)))*.7);
+    float Y=roboty+(((humanx*sin(robotth))+(humany*cos(robotth)))*.7); 
+    
+    cout << "Robot Position: "<< robotx << "," << roboty << "," << robotth<<endl;
+    cout << "Gesture Position: "<< humanx << "," << humany << "," << robotth<<endl;
+    
+    Location temp;
+    temp.set_X(X);
+    temp.set_Y(Y);
+    temp.set_Angle(location.get_Angle()); 
+    cout << "Punto obtenido de kinect a mapa: "<< X << "," << Y << "," << location.get_Angle()<<endl;
+    cout << "Punto obtenido de kinect a mapa: "<< temp.get_X() << "," << temp.get_Y() << "," << temp.get_Angle()<<endl;
+    return temp;
+}
 
 class Kinect_Plugin : public IPlugin
 {
@@ -125,20 +153,20 @@ void XN_CALLBACK_TYPE UserCalibration_CalibrationStart(xn::SkeletonCapability& c
 // Callback for wave detection
 void XN_CALLBACK_TYPE OnWaveCB(void* cxt)
 {
-	printf("**** InitialWAVE! *****\n");
+	cout<<"**** InitialWAVE! *****"<<endl;
 	Human::getInstance().gesture_detected=true;
 }
 // callback for a new position of any hand
 void XN_CALLBACK_TYPE OnPointUpdate(const XnVHandPointContext* pContext, void* cxt)
 {
-  //if(!Human::getInstance().gesture_detected)
-  //{
+  if(!Human::getInstance().gesture_detected)
+  {
 	Human::getInstance().gesture_detected=true;
 	Human::getInstance().gesture[0]= pContext->ptPosition.X;
 	Human::getInstance().gesture[1]= pContext->ptPosition.Y;
 	Human::getInstance().gesture[2]= pContext->ptPosition.Z;
 	std::cout <<"mano en " << Human::getInstance().gesture[0] << " " << Human::getInstance().gesture[1] << " " << Human::getInstance().gesture[2] << std::endl;
-  //}
+  }
 }
 
 void XN_CALLBACK_TYPE UserCalibration_CalibrationComplete(xn::SkeletonCapability& capability, XnUserID nId, XnCalibrationStatus eStatus, void* pCookie)
@@ -222,6 +250,22 @@ void rotate(XnFloat  m[9]) {
 XnUInt64 F_;
 XnDouble pixel_size_;
 
+// void getdephtmm(int u, int v, double &X, double &Y, double &Z)
+// {
+//     KNI_DEV->getInstance().g_Depth.GetIntProperty("ZPD", F_);
+// 
+//     const XnDepthPixel* pDepthMap = KNI_DEV->getInstance().g_Depth.GetDepthMap();
+//     KNI_DEV->getInstance().g_Depth.GetRealProperty ("ZPPS", pixel_size_);
+//     int depthIdx=v * XN_VGA_X_RES + u;
+//     X = (u - 320) * pDepthMap[depthIdx] * (pixel_size_ * 2)   / F_;
+//     Y = (v - 240) * pDepthMap[depthIdx] * (pixel_size_* 2)  / F_;
+//     Z = pDepthMap[depthIdx] ;
+// 
+//     std::cout << "kinect says point " << u << " " << v << " is at " << X << "  " << Y << "   " << Z << std::endl;
+// 
+// 
+// }
+
 void getdephtmm(int u, int v, double &X, double &Y, double &Z)
 {
     KNI_DEV->getInstance().g_Depth.GetIntProperty("ZPD", F_);
@@ -229,14 +273,26 @@ void getdephtmm(int u, int v, double &X, double &Y, double &Z)
     const XnDepthPixel* pDepthMap = KNI_DEV->getInstance().g_Depth.GetDepthMap();
     KNI_DEV->getInstance().g_Depth.GetRealProperty ("ZPPS", pixel_size_);
     int depthIdx=v * XN_VGA_X_RES + u;
-    X = (u - 320) * pDepthMap[depthIdx] * (pixel_size_ * 2)   / F_;
-    Y = (v - 240) * pDepthMap[depthIdx] * (pixel_size_* 2)  / F_;
-    Z = pDepthMap[depthIdx] ;
+     X = (u - 320) * pDepthMap[depthIdx] * (pixel_size_*2)  / F_;
+      Y = (v - 240) * pDepthMap[depthIdx] * (pixel_size_*2)  / F_;
+      Z = pDepthMap[depthIdx] ;
+    for (int j=-2; j<=2; j++)
+    {
+      for (int k=-2; k<=2; k++)
+      {
+	int depthIdx=(v+k) * XN_VGA_X_RES + (u+j);
+       X =(X+ ((u+j) - 320) * pDepthMap[depthIdx] * (pixel_size_*2)  / F_)/2;
+       Y = (Y+ ((v+k) - 240) * pDepthMap[depthIdx] * (pixel_size_*2)  / F_)/2;
+       Z = (Z+pDepthMap[depthIdx])/2 ;
+      }
+    }
 
     std::cout << "kinect says point " << u << " " << v << " is at " << X << "  " << Y << "   " << Z << std::endl;
-
+//     sleep(10);
 
 }
+
+
 
 void Kinect_Plugin::Main()
 {
@@ -281,13 +337,7 @@ void Kinect_Plugin::Main()
     nRetVal = KNI_DEV->getInstance().g_Context.FindExistingNode(XN_NODE_TYPE_GESTURE, *KNI_DEV->getInstance().getGestureGenerator());
     nRetVal = KNI_DEV->getInstance().g_Context.FindExistingNode(XN_NODE_TYPE_HANDS, *KNI_DEV->getInstance().getHandsGenerator());
 // 
-
-// 
      //KNI_DEV->getInstance().g_Scene.GetMetaData(KNI_DEV->getInstance().g_SceneMD );
-
-    
-    
-
 
     XnCallbackHandle hUserCallbacks, hCalibrationStart, hCalibrationComplete, hPoseDetected;
     if (!KNI_DEV->getInstance().g_User.IsCapabilitySupported(XN_CAPABILITY_SKELETON))
@@ -365,56 +415,113 @@ void Kinect_Plugin::Main()
         memcpy(imgRGB8u->imageData,KNI_DEV->getInstance().getImageMetaData()->Data(),1280*1024*3);
         cvCvtColor(imgRGB8u,imageinfo,CV_RGB2BGR);
 
-        patrol->getInstance().kinectInfo->set_depth(depthinfo);
-        patrol->getInstance().kinectInfo->set_RGB(imageinfo);
+        sharedMemory->getInstance().kinectInfo->set_depth(depthinfo);
+        sharedMemory->getInstance().kinectInfo->set_RGB(imageinfo);
 
-        if(patrol->getInstance().getAction()=="computePoint")
+        if(sharedMemory->getInstance().getAction()=="computePoint")
         {
-          cout<<"Starting: "<< patrol->getInstance().getAction() << "STATE in Kinect"<<endl;  
+          cout<<"Starting: "<< sharedMemory->getInstance().getAction() << "STATE in Kinect"<<endl;  
             do
             {
                 usleep(5000);
-            } while(patrol->getInstance().getObjectPositionX()==0 || patrol->getInstance().getObjectPositionY()==0);
+            } while(sharedMemory->getInstance().getObjectPositionX()==0 || sharedMemory->getInstance().getObjectPositionY()==0);
 
-            std::cout << "voy a calcular usando " << patrol->getInstance().getObjectPositionX() << "   "  << patrol->getInstance().getObjectPositionY() << "   " <<  std::endl;
+            std::cout << "voy a calcular usando " << sharedMemory->getInstance().getObjectPositionX() << "   "  << sharedMemory->getInstance().getObjectPositionY() << "   " <<  std::endl;
            double x,y,z;
-	    getdephtmm(patrol->getInstance().getObjectPositionX(), patrol->getInstance().getObjectPositionY(),x, y,z);
-	    patrol->getInstance().setRealObjectPositionX(x);
-	    patrol->getInstance().setRealObjectPositionY(y);
-	    patrol->getInstance().setRealObjectPositionZ(z);
-            std::cout << "ya calcule el punto y obtuve " << patrol->getInstance().getRealObjectPositionX() << "   " << patrol->getInstance().getRealObjectPositionY() << "   " << patrol->getInstance().getRealObjectPositionZ()  << std::endl;
+	    getdephtmm(sharedMemory->getInstance().getObjectPositionX(), sharedMemory->getInstance().getObjectPositionY(),x, y,z);
+	    sharedMemory->getInstance().setRealObjectPositionX(x);
+	    sharedMemory->getInstance().setRealObjectPositionY(y);
+	    sharedMemory->getInstance().setRealObjectPositionZ(z);
+            std::cout << "ya calcule el punto y obtuve " << sharedMemory->getInstance().getRealObjectPositionX() << "   " << sharedMemory->getInstance().getRealObjectPositionY() << "   " << sharedMemory->getInstance().getRealObjectPositionZ()  << std::endl;
 	    
-	    patrol->getInstance().setObjectPositionX(0);
-	    patrol->getInstance().setObjectPositionY(0);
+	    //si da un valor atípico 
+	    //TODO revisar, si el objeto si esta en esta coordenadas, esto s epodría ciclar
+	    //if(sharedMemory->getInstance().getRealObjectPositionX()>750 || sharedMemory->getInstance().getRealObjectPositionZ()<200)
+	    //{
+	      //sharedMemory->getInstance().setAction("recognizeObject");
+	    //}
+	    //else{
+	      sharedMemory->getInstance().setObjectPositionX(0);
+	      sharedMemory->getInstance().setObjectPositionY(0);
+	       //sharedMemory->getInstance().setAction(cambiar_estado("punto_calculado", "si"));
+	      sharedMemory->getInstance().setAction("graspObject");
+	    //}
+	    
 	
-            //patrol->getInstance().setAction(cambiar_estado("punto_calculado", "si"));
-	    patrol->getInstance().setAction("graspObject");
+           
         }
 
-        
-        if(patrol->getInstance().getAction()=="payAttention")
-        //string actio = "payAttention";
-	//if(actio=="payAttention")  
+       
+        if(sharedMemory->getInstance().getAction()=="payAttention")
         {
-          cout<<"Starting: "<<patrol->getInstance().getAction() << " STATE in Kinect"<<endl;  
+	  if (firstTime){ 
+	    t_ini = clock();
+	    firstTime=false;
+            Human::getInstance().gesture_detected=false;
+	  }
+	  
+          cout<<"Starting: "<<sharedMemory->getInstance().getAction() << " STATE in Kinect"<<endl;  
            if(Human::getInstance().gesture_detected)
 	   {
-	     cout << "gesture detected in payAttention" << endl;
-	     patrol->getInstance().setGestureDepthPosition(Human::getInstance().gesture[2]);
+	     cout << "**GESTURE DETECTED in payAttention" << endl;
+	     sharedMemory->getInstance().setGestureDepthPosition(Human::getInstance().gesture[2]);
+	     sharedMemory->getInstance().startDownToRotations=false;
 	     
-	     Human::getInstance().gesture_detected=false;
-	     patrol->getInstance().sintetizer.set_Phrase("Emergency Situation Detected");
-	     sleep(1);
-	     patrol->getInstance().setStringDestination("bedroom1");
-             patrol->getInstance().setAction("navigateCloseTo");
-	   }//else
+	     if (sharedMemory->getInstance().getTestRunning()=="Emergency"){
+	      sharedMemory->getInstance().sintetizer.set_Phrase("Emergency Situation Detected");
+	      //saving image of victim
+	      cv::imwrite("../data/EmergencyReport/imgPeersonHurt.png" ,cv::Mat( sharedMemory->getInstance().kinectInfo->get_RGB()));
+	      cv::Mat mapa;
+	      mapa= cv::imread("../data/map.png");
+	      
+	      //saving victim on map
+              cv::Scalar color= cv::Scalar(0,0,255);
+	      std::cout << "sharedMemory->getInstance().getRobotPosition().get_X()=" << sharedMemory->getInstance().getRobotPosition().get_X() <<std::endl;
+	      std::cout << "sharedMemory->getInstance().getRobotPosition().get_Y()=" << sharedMemory->getInstance().getRobotPosition().get_Y() <<std::endl;
+	      std::cout << "PIXEL_X=" << (sharedMemory->getInstance().getRobotPosition().get_X()/50)+ORIGIN_X << std::endl;
+	      std::cout << "PIXEL_Y=" << (sharedMemory->getInstance().getRobotPosition().get_Y()/50)+ORIGIN_Y << std::endl;
+	      
+	      cv::circle(mapa, cv::Point((sharedMemory->getInstance().getRobotPosition().get_X()/50)+ORIGIN_X,(sharedMemory->getInstance().getRobotPosition().get_Y()/50)+ORIGIN_Y), 7, color, 10, 8, 0);
+	      cv::imwrite("../data/EmergencyReport/locationPeersonHurt.png",mapa);
+	      
+	      sharedMemory->getInstance().setStringDestination("bedroom1");
+	      sharedMemory->getInstance().setAction("navigateCloseTo");
+	     }else{
+	       sharedMemory->getInstance().sintetizer.set_Phrase("I have seen a guest requesting");
+// 	       cv::Mat mapa;
+// 	       mapa= cv::imread("../data/map.png");
+// 	       cv::Scalar color= cv::Scalar(0,0,255);
+// 	       cv::circle(mapa, cv::Point((sharedMemory->getInstance().getRobotPosition().get_X()/50)+170,(sharedMemory->getInstance().getRobotPosition().get_Y()/50)+170), 7, color, 10, 8, 0);
+// 	       cv::imwrite("../data/EmergencyReport/locationPeersonHurt.png",mapa);
+// 	       sleep(1);
+	       //la función ya esta restando un valor (100) a la profundidad dadda por el kinec 
+	       Location temp=getPointInMap(sharedMemory->getInstance().getRobotPosition());
+	       sharedMemory->getInstance().lastObjective->setObjectivePosition(temp);
+	       sharedMemory->getInstance().setAction("navigateToPoint");
+	     }
+	     firstTime=true;
+	   }else{
+	     t_fin = clock();
+	     cout << "**NO Gesture in payAttention" << endl;
+	     //supone que la diferencia la da en segundos
+	     //std::cout << "TIME  " << t_ini << "    " << t_fin << std::endl;
+	     //nanosegundosf
+	     firstTime = false;
+	     if ((t_fin/1000000)-(t_ini/1000000)>30){
+	       cout << "**Time OVER" << endl;
+	       firstTime=true;
+	       sharedMemory->getInstance().setAction("turn");
+	    }
+	       
+	  }
+	     
 	   //cout << "gesture NO detected" << endl;
 	   //sleep(1);
         }
         
-        if(patrol->getInstance().getAction()=="Find_person")
+        if(sharedMemory->getInstance().getAction()=="Find_person")
         {
-          cout<<"Starting: "<< patrol->getInstance().getAction() << " STATE in Kinect"<<endl;  
+          cout<<"Starting: "<< sharedMemory->getInstance().getAction() << " STATE in Kinect"<<endl;  
             KNI_DEV->getInstance().g_User.GetUserPixels(2, KNI_DEV->getInstance().g_SceneMD);
             const XnLabel* pLabels = KNI_DEV->getInstance().g_SceneMD.Data();
 	    //TODO Error?
@@ -439,18 +546,18 @@ void Kinect_Plugin::Main()
 // 		    }
                 }
 
-           // patrol->getInstance().kinectInfo->set_user(sceneinfo);
+           // sharedMemory->getInstance().kinectInfo->set_user(sceneinfo);
 // 		cvShowImage("polo" ,sceneinfo);
 // 		cvWaitKey(100);
 
         }
-	if(patrol->getInstance().getAction()=="transformKinectToMapPoint")
+	if(sharedMemory->getInstance().getAction()=="transformKinectToMapPoint")
         {
-	  cout<<"Starting: "<< patrol->getInstance().getAction() << " STATE in Kinect"<<endl; 
+	  cout<<"Starting: "<< sharedMemory->getInstance().getAction() << " STATE in Kinect"<<endl; 
 	  //supone que es en mm
-	  float robotx=patrol->getInstance().getRobotPosition().get_X();
-	  float roboty=patrol->getInstance().getRobotPosition().get_Y();
-	  float robotth=patrol->getInstance().getRobotPosition().get_Angle() * DEG_TO_RAD;
+	  float robotx=sharedMemory->getInstance().getRobotPosition().get_X();
+	  float roboty=sharedMemory->getInstance().getRobotPosition().get_Y();
+	  float robotth=sharedMemory->getInstance().getRobotPosition().get_Angle() * DEG_TO_RAD;
 
 	  float humanx=Human::getInstance().gesture[2]; //con respecto a robot es X y con respecto a kinect Z
 	  float humany=Human::getInstance().gesture[0]*-1; //con respecto a robot Y y con respecto a kinect X
@@ -460,11 +567,11 @@ void Kinect_Plugin::Main()
 	  //TODO Guardarlo en memoria compartida
 	}
 
-        if(patrol->getInstance().getAction()=="follow")
+        if(sharedMemory->getInstance().getAction()=="follow")
         {
 
 
-          cout<<"Starting: "<< patrol->getInstance().getAction() << " STATE in Kinect"<<endl;  
+          cout<<"Starting: "<< sharedMemory->getInstance().getAction() << " STATE in Kinect"<<endl;  
 
             nUsers=MAX_NUM_USERS;
             KNI_DEV->getInstance().g_User.GetUsers(aUsers, nUsers);
@@ -531,4 +638,5 @@ void Kinect_Plugin::stop()
 {
     KNI_DEV->getInstance().closeDevice();
 }
+
 

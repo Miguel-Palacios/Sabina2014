@@ -1,0 +1,11 @@
+Starting: recognizeObject STATE in ObjectRecognition
+../data/Objects/coke/
+nombre de Carpeta es: ../data/Objects/coke/pos/
+Archivo es: crop19.png
+Archivo es: negatives843.png
+Caso Siguiente: 
+Imagen 0: ../data/Objects/coke/pos/crop19.png tiene Dimensiones (fil: 295, col: 156)
+Imagen 1: ../data/Objects/coke/pos/negatives843.png tiene Dimensiones (fil: 226, col: 164)
+ Par: (0, 1). Resultado: 1. 
+ultima altura 194ultimo ancho 344
+

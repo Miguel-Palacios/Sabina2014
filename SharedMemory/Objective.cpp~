@@ -35,7 +35,7 @@ void Objective::setVisualID(int value) {
 // *  Gets the type of the objective person, object \return Type
 // */
 string Objective::getType() {
-    return type;
+    return *type;
 }
 
 ///*! \brief Sets the type of the objective
