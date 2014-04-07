@@ -66,15 +66,17 @@ void Manipulacion::Main()
     //pluginTab = new Tab("Manipulacion");
     //logTerminal = new Console(0,HEIGHT*.02,500,HEIGHT/2,"error", pluginTab);
     ArmKatanaForSabina brazo;
+
     brazo.init( "192.168.168.232", "../data/configfiles450/katana6M180_G.cfg");
     
-    if (sharedMemory->getInstance().getActionCalibration())
+    //if (sharedMemory->getInstance().getActionCalibration())
+    if (!brazo.isCalibrated())
     brazo.calibrate();
     
     sleep(5);
     brazo.setVelocity(20);
-    brazo.moveToHanging();
-    brazo.moveToCarriyingPos();
+    //brazo.moveToHanging();
+    brazo.moveToCarriyingPos(true);
     
     
 
@@ -103,17 +105,15 @@ void Manipulacion::Main()
          // brazo.testGrasping(0, 180,  500);
 	  //sleep(4);
 	  //brazo.testGrasping(0, -180,  500);
-	  
-	  brazo.Grasping(0,y,z);
+	  //TODO revisar si es algun elemmento transparente el que se va a agarrar
+	  brazo.graspByApproachingAt(0,y,z);
 	  //brazo.openGripper();
 	  //sleep(4);	
 	  sharedMemory->getInstance().sintetizer.set_Phrase("I have it");
 	  //brazo.closerGripper();
 	  sleep(2);
 	  brazo.moveToCarriyingPos();
-	  
-	  
-          
+	          
 	 // if (sharedMemory->getInstance().testRunning->compare("pick and place")==0){
 	    //Aqui debe indicarse la posición en donde se encuentra la categoria del objeto agarrado
 	  

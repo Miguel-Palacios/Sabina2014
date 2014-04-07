@@ -90,50 +90,50 @@ void VoiceSynthesis::Main()
             std::string temp=ss.str();
             std::cout <<temp << std::endl;
             system (temp.c_str());
-            string str=sharedMemory->getInstance().sintetizer.get_Phrase();
-            int emotion=0;
-
-            for ( int i = 0 ; i < str.length(); i++)
-            {
-
-                char temp=str[i];
-                switch(temp)
-                {
-                case 'a':
-                    sharedMemory->getInstance().faceFrame=1+emotion;
-                    break;
-                case 'e':
-                    sharedMemory->getInstance().faceFrame=2+emotion;
-                    break;
-                case 'f':
-                    sharedMemory->getInstance().faceFrame=11+emotion;
-                    break;
-                case 'i':
-                    sharedMemory->getInstance().faceFrame=3+emotion;
-                    break;
-                case 'o':
-                    sharedMemory->getInstance().faceFrame=4+emotion;
-                    break;
-                case 's':
-                    sharedMemory->getInstance().faceFrame=17+emotion;
-                    break;
-                case 't':
-                    sharedMemory->getInstance().faceFrame=3+emotion;
-                    break;
-                case 'u':
-                    sharedMemory->getInstance().faceFrame=5+emotion;
-                    break;
-                case 'y':
-                    sharedMemory->getInstance().faceFrame=3+emotion;
-                    break;
-                default:
-                    sharedMemory->getInstance().faceFrame=0;
-                    break;
-                }
-
-//                 patrol->getInstance().face_frame=i;
-                usleep(73000);
-            }
+//             string str=sharedMemory->getInstance().sintetizer.get_Phrase();
+//             int emotion=0;
+// 
+//             for ( int i = 0 ; i < str.length(); i++)
+//             {
+// 
+//                 char temp=str[i];
+//                 switch(temp)
+//                 {
+//                 case 'a':
+//                     sharedMemory->getInstance().faceFrame=1+emotion;
+//                     break;
+//                 case 'e':
+//                     sharedMemory->getInstance().faceFrame=2+emotion;
+//                     break;
+//                 case 'f':
+//                     sharedMemory->getInstance().faceFrame=11+emotion;
+//                     break;
+//                 case 'i':
+//                     sharedMemory->getInstance().faceFrame=3+emotion;
+//                     break;
+//                 case 'o':
+//                     sharedMemory->getInstance().faceFrame=4+emotion;
+//                     break;
+//                 case 's':
+//                     sharedMemory->getInstance().faceFrame=17+emotion;
+//                     break;
+//                 case 't':
+//                     sharedMemory->getInstance().faceFrame=3+emotion;
+//                     break;
+//                 case 'u':
+//                     sharedMemory->getInstance().faceFrame=5+emotion;
+//                     break;
+//                 case 'y':
+//                     sharedMemory->getInstance().faceFrame=3+emotion;
+//                     break;
+//                 default:
+//                     sharedMemory->getInstance().faceFrame=0;
+//                     break;
+//                 }
+// 
+// //                 patrol->getInstance().face_frame=i;
+//                 usleep(73000);
+//             }
             sharedMemory->getInstance().sintetizer.set_Phrase("");
             sharedMemory->getInstance().faceFrame=0;
         }

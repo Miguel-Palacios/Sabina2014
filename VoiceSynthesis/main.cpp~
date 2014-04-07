@@ -33,8 +33,9 @@ SharedMemory *sharedMemory;
 //Tab *pluginTab;
 //InputSingleton *teclado;
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+//TODO revisar opencv
+//#include <opencv/cv.h>
+//#include <opencv/highgui.h>
 
 #define PLUGIN_NAME "VoiceSynthesis"
 

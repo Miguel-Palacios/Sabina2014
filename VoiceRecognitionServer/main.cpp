@@ -622,22 +622,10 @@ void VoiceRecognitionServer::Main()
 			  sharedMemory->getInstance().setAction("navigateToHome");
 			}
 					  
-		} else if (action =="payAttention"){
-// 			string helping = "";
-// 			string init = "";
-// 			cout<< "Iniciando: " << action <<endl;
-// 			
-// 			init = LoopStart("REQstartHelping",net);
-// 			// Request for a command
-// 			helping = LoopRecognize("REQstartHelping",net, "Do you need help?");
-// 			
-// 			sharedMemory->getInstance().setStringDestination("bedroom1");
-// 			sharedMemory->getInstance().setAction("navigateCloseTo");
-		}
-		else if (action =="requestEmergencyObjects"){
+		} else if (action =="requestEmergencyObjects"){
 			string object = "";
 			string init = "";
-          cout<<"Starting: "<< action << " STATE in VoiceRecognitionServer"<<endl;  
+			cout<<"Starting: "<< action << " STATE in VoiceRecognitionServer"<<endl;  
 							
 			sharedMemory->getInstance().sintetizer.set_Phrase("I have detected an emergency");
 			sleep(3);
@@ -651,7 +639,6 @@ void VoiceRecognitionServer::Main()
 			  sharedMemory->getInstance().sintetizer.set_Phrase(object);
 			  //TODO the real object is changed for coke because test (object recognition) 
 			  sharedMemory->getInstance().setRequestedObject("coke");
-			  
 			  sharedMemory->getInstance().setStringDestination("dining");
 			  sharedMemory->getInstance().setAction("navigateToObject");
 			}else{

@@ -36,14 +36,17 @@ Location getPointInMap(Location location){
     float robotx=location.get_X();
     float roboty=location.get_Y();
     float robotth=location.get_Angle() * DEG_TO_RAD;
-
+    //float robotth=location.get_Angle();
+    
     float humanx=Human::getInstance().gesture[2];//le reste 100 probando cque no vaya tan cerca de la persona
     float humany=Human::getInstance().gesture[1]*-1;
+    
+
 
     float X=robotx+(((humanx*cos(robotth))-(humany*sin(robotth)))*.7);
     float Y=roboty+(((humanx*sin(robotth))+(humany*cos(robotth)))*.7); 
     
-    cout << "Robot Position: "<< robotx << "," << roboty << "," << robotth<<endl;
+    cout << "Robot Position: "<< robotx << "," << roboty << "," << location.get_Angle()<<endl;
     cout << "Gesture Position: "<< humanx << "," << humany << "," << robotth<<endl;
     
     Location temp;
@@ -51,7 +54,7 @@ Location getPointInMap(Location location){
     temp.set_Y(Y);
     temp.set_Angle(location.get_Angle()); 
     cout << "Punto obtenido de kinect a mapa: "<< X << "," << Y << "," << location.get_Angle()<<endl;
-    cout << "Punto obtenido de kinect a mapa: "<< temp.get_X() << "," << temp.get_Y() << "," << temp.get_Angle()<<endl;
+    cout << "Punto obtenido de kinect a mapa que se regresa: "<< temp.get_X() << "," << temp.get_Y() << "," << temp.get_Angle()<<endl;
     return temp;
 }
 
@@ -484,17 +487,15 @@ void Kinect_Plugin::Main()
 	      cv::circle(mapa, cv::Point((sharedMemory->getInstance().getRobotPosition().get_X()/50)+ORIGIN_X,(sharedMemory->getInstance().getRobotPosition().get_Y()/50)+ORIGIN_Y), 7, color, 10, 8, 0);
 	      cv::imwrite("../data/EmergencyReport/locationPeersonHurt.png",mapa);
 	      
-	      sharedMemory->getInstance().setStringDestination("bedroom1");
-	      sharedMemory->getInstance().setAction("navigateCloseTo");
+	       Location temp=getPointInMap(sharedMemory->getInstance().getRobotPosition());
+	       sharedMemory->getInstance().lastObjective->setObjectivePosition(temp);
+	      
+	      //sharedMemory->getInstance().setStringDestination("bedroom1");
+	      //sharedMemory->getInstance().setAction("navigateCloseTo");
+	      sharedMemory->getInstance().setAction("navigateToPoint");
 	     }else{
 	       sharedMemory->getInstance().sintetizer.set_Phrase("I have seen a guest requesting");
-// 	       cv::Mat mapa;
-// 	       mapa= cv::imread("../data/map.png");
-// 	       cv::Scalar color= cv::Scalar(0,0,255);
-// 	       cv::circle(mapa, cv::Point((sharedMemory->getInstance().getRobotPosition().get_X()/50)+170,(sharedMemory->getInstance().getRobotPosition().get_Y()/50)+170), 7, color, 10, 8, 0);
-// 	       cv::imwrite("../data/EmergencyReport/locationPeersonHurt.png",mapa);
-// 	       sleep(1);
-	       //la función ya esta restando un valor (100) a la profundidad dadda por el kinec 
+	        sharedMemory->getInstance().startDownToRotations=false;
 	       Location temp=getPointInMap(sharedMemory->getInstance().getRobotPosition());
 	       sharedMemory->getInstance().lastObjective->setObjectivePosition(temp);
 	       sharedMemory->getInstance().setAction("navigateToPoint");
@@ -502,7 +503,7 @@ void Kinect_Plugin::Main()
 	     firstTime=true;
 	   }else{
 	     t_fin = clock();
-	     cout << "**NO Gesture in payAttention" << endl;
+	     //cout << "**NO Gesture in payAttention" << endl;
 	     //supone que la diferencia la da en segundos
 	     //std::cout << "TIME  " << t_ini << "    " << t_fin << std::endl;
 	     //nanosegundosf

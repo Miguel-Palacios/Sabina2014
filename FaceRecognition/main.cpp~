@@ -141,8 +141,8 @@ void FaceRecognition::Main()
 	    cout<<"Starting: "<< action << "STATE in FaceRecognition"<<endl;  
             sharedMemory->getInstance().sintetizer.set_Phrase("Hello i am sabina");
             sleep(2);
-	    sharedMemory->getInstance().sintetizer.set_Phrase("Please look at the camera with blue lights, and do not move ");
-            sleep(4);
+	    sharedMemory->getInstance().sintetizer.set_Phrase("Please look at the camera with blue lights on my head and do not move ");
+            sleep(5);
             do
             {
                 frame=sharedMemory->getInstance().ptzDevice.get_image();
@@ -156,9 +156,9 @@ void FaceRecognition::Main()
  	    sharedMemory->getInstance().lastObjective->setType("person");
 	    sharedMemory->getInstance().lastObjective->setVisualID(userID);
 	    //sharedMemory->getInstance().lastObjective->setObjectivePosition(sharedMemory->getInstance().getRobotPosition());
-	    	    
-            sharedMemory->getInstance().sintetizer.set_Phrase( "Ok i learnd your face. Thank you ");
-            sleep(4);
+	    sleep(1);
+            sharedMemory->getInstance().sintetizer.set_Phrase( "Ok i learnd your face Thank you ");
+            sleep(3);
             //sharedMemory->getInstance().sintetizer.set_Phrase( " ");
             
 	    //TODO revisar el estado al que transita una vez detectado el paciente

@@ -177,12 +177,17 @@ void Vision_Objects::Main()
                     cv::imshow("cutout",cutout);
                     std::cout << "ultima altura " << boundRect[i].height << "ultimo ancho " << boundRect[i].width << std::endl;
                     cv::waitKey(100);
+		    std::cout << "despues de WAIT"<< std::endl;
                     if(OrbObject.evalWindow(cutout))
                     {
+		       std::cout << "ENCONTRE" << std::endl;
                        cv::rectangle(kinect_rgb, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0);
 			string phrase;
-			//phrase = "I found the "+ sharedMemory->getInstance().getRequestedObject();
+			if (sharedMemory->getInstance().getTestRunning()=="Emergency")
+			phrase = "I found the "+ sharedMemory->getInstance().getRequestedObject();
+			else
 			phrase = "I found the "+ sharedMemory->getInstance().getLastObjective().getOrder();
+			
 			sharedMemory->getInstance().sintetizer.set_Phrase(phrase);
 			
 			//sharedMemory->getInstance().setAction(cambiar_estado("objeto_reconocido","si"));
@@ -191,22 +196,23 @@ void Vision_Objects::Main()
 			sharedMemory->getInstance().setObjectPositionY(center[i].y/2.1333333);
 			newobject=true;
 			
-                        std::cout << "ENCONTRE" << std::endl;
-			cv::destroyAllWindows();
+                       
+// 			cv::destroyAllWindows();
 			//lastMoment
 			i= contours.size();
 			userOrder++;
-			sharedMemory->getInstance().setAction("computePoint");
 			
 			
-                        std::stringstream pp;
-                        pp<< "../data/EmergencyReport/EmergencyObjectRequested.png";
-                         // conta++;
-                        cv::imwrite(pp.str().c_str(), cutout);
+			
+//                         std::stringstream pp;
+//                         pp<< "../data/EmergencyReport/EmergencyObjectRequested.png";
+//                          // conta++;
+//                         cv::imwrite("../data/EmergencyReport/EmergencyObjectRequested.png", cutout);
 //                         std::stringstream cc;
 //                         cc<< "../data/SI/Kine" << conta << ".png";
 //                         conta++;
 //                         cv::imwrite(cc.str().c_str(), kinect_rgb);
+			sharedMemory->getInstance().setAction("computePoint");
                     }
                     else {
                          std::cout << "NO ENCONTRE" << std::endl;

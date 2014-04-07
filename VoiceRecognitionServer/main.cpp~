@@ -549,7 +549,9 @@ void VoiceRecognitionServer::Main()
 			  numberOfUsersToLearn=0;
 			  sharedMemory->getInstance().setAction("navigateToObject");
 			}else{
-			  sharedMemory->getInstance().setAction("navigateToParty");
+			  //debe ser dinámico el lugar donde es la fiesta
+			  sharedMemory->getInstance().setStringDestination("Living");
+			  sharedMemory->getInstance().setAction("navigate");
 			  
 			}
 				
@@ -620,22 +622,10 @@ void VoiceRecognitionServer::Main()
 			  sharedMemory->getInstance().setAction("navigateToHome");
 			}
 					  
-		} else if (action =="payAttention"){
-// 			string helping = "";
-// 			string init = "";
-// 			cout<< "Iniciando: " << action <<endl;
-// 			
-// 			init = LoopStart("REQstartHelping",net);
-// 			// Request for a command
-// 			helping = LoopRecognize("REQstartHelping",net, "Do you need help?");
-// 			
-// 			sharedMemory->getInstance().setStringDestination("bedroom1");
-// 			sharedMemory->getInstance().setAction("navigateCloseTo");
-		}
-		else if (action =="requestEmergencyObjects"){
+		} else if (action =="requestEmergencyObjects"){
 			string object = "";
 			string init = "";
-          cout<<"Starting: "<< action << " STATE in VoiceRecognitionServer"<<endl;  
+			cout<<"Starting: "<< action << " STATE in VoiceRecognitionServer"<<endl;  
 							
 			sharedMemory->getInstance().sintetizer.set_Phrase("I have detected an emergency");
 			sleep(3);

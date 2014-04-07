@@ -64,22 +64,36 @@ void handleRobotUpdate(ArNetPacket* packet) {
 
   packet->bufToStr(textData, 63);
   //printf("... Robot server status: \"%s\"\n", textData);
-
-  packet->bufToStr(buf, 63);
+  
+  packet -> bufToStr(buf, 63);
+  
   packet->bufToByte2();
 
-//   robotXPosition = packet->bufToByte4();
-//   robotYPosition = packet->bufToByte4();
-//   robotThPosition = packet->bufToByte4();
+  tempLocation.set_X(packet->bufToByte4());
+  tempLocation.set_Y(packet->bufToByte4());
+ 
+  int i =packet -> bufToByte2();
   
-    tempLocation.set_X(packet->bufToByte4());
-    tempLocation.set_Y(packet->bufToByte4());
-    tempLocation.set_Angle(packet->bufToByte4());
-    sharedMemory->getInstance().setRobotPosition(tempLocation);
-  
-   
- // printf("Robot position: (%d, %d, %d)\n", robotXPosition, robotYPosition, robotThPosition);
+  tempLocation.set_Angle(i);
+ 
+  //printf(".. Robot's forward velocity: %d\n", packet -> bufToByte2());
 
+  //printf(".. Robot's rotation velocity: %d\n\n", packet -> bufToByte2());
+  
+  
+// 
+//   packet->bufToStr(buf, 63);
+//   packet->bufToByte2();
+// 
+//    tempLocation.set_X(packet->bufToByte4());
+//     tempLocation.set_Y(packet->bufToByte4());
+//     tempLocation.set_Angle(packet->bufToByte2());
+     sharedMemory->getInstance().setRobotPosition(tempLocation);
+//   
+//    
+  // printf("Robot position: (%d, %d, %f)\n", tempLocation.get_X(), tempLocation.get_Y(), tempLocation.get_Angle());
+//   printf("Robot TETA position: %d)\n", i);
+//printf("Robot float TETA position: %f)\n", tempLocation.get_Angle());
 }
 
 
@@ -320,9 +334,13 @@ void NavigationClient::Main()
 		}if (action=="navigateToParty"){
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
 		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
-                   sharedMemory->getInstance().setAction("turn");
-		 
-			
+		    sleep(2);
+		    sharedMemory->getInstance().startDownToRotations=false;
+		    sharedMemory->getInstance().sintetizer.set_Phrase("If you need something please wave your hand to my bottom kinect");
+		    sleep(6);
+		    indexHeading=0;
+		    sharedMemory->getInstance().setAction("turn");
+		   
 		}
 		else if (action=="navigateBackToEmergency"){
 		    
@@ -372,10 +390,11 @@ void NavigationClient::Main()
 		  sharedMemory->getInstance().setAction("recognizeObject");
 		}
 		else if (action=="navigateToObjectCategory"){
+		  //considera que la posición de la categoria de un objeto (en pick and place) es la misma posición que la de donde esta el objeto en emergencia.
 		  cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl; 
 		  //por default ahorita esta dining como el la categoria del objeto
 		  navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
-		  if (sharedMemory->getInstance().getTestRunning()=="pick and place")
+		  if (sharedMemory->getInstance().getTestRunning()=="pick and place" || sharedMemory->getInstance().getTestRunning()=="Emergency" )
 		    sharedMemory->getInstance().setAction("deliverObject");
 		  else
 		  sharedMemory->getInstance().setAction("userRecognize");
@@ -398,8 +417,10 @@ void NavigationClient::Main()
 		    }
 		 
 		    printf("Navigation ended");
-	    
+	           if (sharedMemory->getInstance().getTestRunning()=="CocktailParty")
 		   sharedMemory->getInstance().setAction("userLearn");
+		   else
+		   sharedMemory->getInstance().setAction("requestEmergencyObjects");
 	
 		}else if (action=="navigateForward"){
 		  
@@ -422,54 +443,65 @@ void NavigationClient::Main()
                   cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl;
 		  if (sharedMemory->getInstance().startDownToRotations==false){
 		    if (sharedMemory->getInstance().getStringDestination()=="bedroom"){
+		      cout<<"Entrando BEDROOM 1"<<endl;
 		      if (indexHeading < headingsForBedroom.size()){
 			heading=headingsForBedroom[indexHeading];
 			indexHeading++;
+			cout<<"Entrando a If UNO bedroom"<<endl;
 		      }else{
 			sharedMemory->getInstance().startDownToRotations=true;
 			indexHeading=headingsForBedroom.size()-2;
 			heading=(-1000);//valor dado para detectar que no se obtuvo un valor válido para el heading, dado que se cambia la forma en como se recorre el arreglo
+			cout<<"Entrando a else UNO bedroom"<<endl;
 		      }
-		    }else if (sharedMemory->getInstance().getStringDestination()=="living"){
+		    }else {//if (sharedMemory->getInstance().getStringDestination()=="living"){
+		      cout<<"Entrando a LIVING 1"<<endl;
 		      if (indexHeading < headingsForLiving.size()){
 			heading=headingsForLiving[indexHeading];
 			indexHeading++;
+			cout<<"Entrando a If UNO living"<<endl;
 		      }else{
 			sharedMemory->getInstance().startDownToRotations=true;
 			indexHeading=headingsForLiving.size()-2;//no menos uno porque ya el proceso anterior permition visitar este indice
 			heading=(-1000);
+			cout<<"Entrando a else UNO Living"<<endl;
 		      }
 		    }
 		    
 		  }else{
 		    if (sharedMemory->getInstance().getStringDestination()=="bedroom"){
+		      cout<<"Entrando BEDROoM 2"<<endl;
 		      if (indexHeading >= 0){
 			heading=headingsForBedroom[indexHeading];
 			indexHeading--;
+			cout<<"Entrando a if DOS bedroom"<<endl;
 		      }else{
 			sharedMemory->getInstance().startDownToRotations=false;
 			indexHeading=1;
 			heading=(-1000);
+			cout<<"Entrando a else DOS bedroom"<<endl;
 		      }
-		    }else if (sharedMemory->getInstance().getStringDestination()=="living"){
+		    }else {//if (sharedMemory->getInstance().getStringDestination()=="living"){
+		      cout<<"Entrando a LIVING 2"<<endl;
 		      if (indexHeading>= 0){
 			heading=headingsForLiving[indexHeading];
 			indexHeading--;
+			cout<<"Entrando a if DOS living"<<endl;
 		      }else{
 			sharedMemory->getInstance().startDownToRotations=false;
 			indexHeading=1;//no 0 porque ya el proceso anterior permitió visitar este indice
 			heading=(-1000);
+			cout<<"Entrando a else DOS living"<<endl;
 		      }
 		    }
 		  }
-		    //else if (sharedMemory->getInstance().getStringDestination()=="living")
-		      //increment=40;
+		    
 		  if (heading>(-1000)){
 		    command<<"12 " << heading;
-		    cout<< "******  ROTAR "<<command.str().c_str()<<" grades"<<endl;
-		    sharedMemory->getInstance().sintetizer.set_Phrase("If you need something, please wave your hand to my bottom kinect");
-	            sleep(2);
+		    cout<< "******  ROTAR "<<command.str().c_str()<<" grades con INDEXHEADING: "<<indexHeading<<"valorArray"<< headingsForLiving[indexHeading]<<endl;
 		    client.requestOnceWithString("MicroControllerMotionCommand",command.str().c_str());
+		    //sharedMemory->getInstance().sintetizer.set_Phrase("If you need something, please wave your hand to my bottom kinect");
+	            sleep(1);
 		    cout<<"*INVERSA al hacer el heading: "<< sharedMemory->getInstance().startDownToRotations << endl;
 		    sharedMemory->getInstance().setAction("payAttention"); 
 		  }

@@ -21,8 +21,8 @@
 
 ArmKatana::ArmKatana()
 {
-  initiated = false;
-  verbose = false;
+    initiated = false;
+    verbose = false;
 }
 
 ArmKatana::~ArmKatana()
@@ -38,91 +38,91 @@ int ArmKatana::testing()
 
 bool ArmKatana::init()
 {
-  
-  
-  //return vpRobot::init();
-  	//----------------------------------------------------------------//
-	//open device: a serial port is opened in this case
-	//----------------------------------------------------------------//
-
-	try {
-
-		port = 5566;
-		
-		std::strcpy(ip, "192.168.168.232");
-		strcpy(cfAddress, "/home/irving/projects/KNI/configfiles450/katana6M180_G.cfg");
-
-		device.reset(new CCdlSocket(ip, port));
-
-		std::cout << "-------------------------------------------\n";
-		std::cout << "success:  port " << port << " open\n";
-		std::cout << "-------------------------------------------\n";
-
-		//--------------------------------------------------------//
-		//init protocol:
-		//--------------------------------------------------------//
-
-		protocol.reset(new CCplSerialCRC());
-		std::cout << "-------------------------------------------\n";
-		std::cout << "success: protocol class instantiated\n";
-		std::cout << "-------------------------------------------\n";
-		protocol->init(device.get()); //fails if no response from Katana
-		std::cout << "-------------------------------------------\n";
-		std::cout << "success: communication with Katana initialized\n";
-		std::cout << "-------------------------------------------\n";
 
 
-		//--------------------------------------------------------//
-		//init robot:
-		//--------------------------------------------------------//
-		katana.reset(new CLMBase());
-		katana->create(cfAddress, protocol.get());
+    //return vpRobot::init();
+    //----------------------------------------------------------------//
+    //open device: a serial port is opened in this case
+    //----------------------------------------------------------------//
 
-	} catch(Exception &e) {
-		std::cout << "ERROR: " << e.message() << std::endl;
-		return -1;
-	}
-	std::cout << "-------------------------------------------\n";
-	std::cout << "success: katana initialized\n";
-	std::cout << "-------------------------------------------\n";
-	
+    try {
+
+        port = 5566;
+
+        std::strcpy(ip, "192.168.168.232");
+        strcpy(cfAddress, "/home/irving/projects/KNI/configfiles450/katana6M180_G.cfg");
+
+        device.reset(new CCdlSocket(ip, port));
+
+        std::cout << "-------------------------------------------\n";
+        std::cout << "success:  port " << port << " open\n";
+        std::cout << "-------------------------------------------\n";
+
+        //--------------------------------------------------------//
+        //init protocol:
+        //--------------------------------------------------------//
+
+        protocol.reset(new CCplSerialCRC());
+        std::cout << "-------------------------------------------\n";
+        std::cout << "success: protocol class instantiated\n";
+        std::cout << "-------------------------------------------\n";
+        protocol->init(device.get()); //fails if no response from Katana
+        std::cout << "-------------------------------------------\n";
+        std::cout << "success: communication with Katana initialized\n";
+        std::cout << "-------------------------------------------\n";
+
+
+        //--------------------------------------------------------//
+        //init robot:
+        //--------------------------------------------------------//
+        katana.reset(new CLMBase());
+        katana->create(cfAddress, protocol.get());
+
+    } catch(Exception &e) {
+        std::cout << "ERROR: " << e.message() << std::endl;
+        return -1;
+    }
+    std::cout << "-------------------------------------------\n";
+    std::cout << "success: katana initialized\n";
+    std::cout << "-------------------------------------------\n";
+
 //	ready = true;
-	
-	//set protected members
-	motorCount = katana->getNumberOfMotors();
-	jointCount = motorCount -1;
-	gripperId = motorCount -1;
-	
-	activated = true;
-	gripperEndPoseReached = false;
-	
+
+    //set protected members
+    motorCount = katana->getNumberOfMotors();
+    jointCount = motorCount -1;
+    gripperId = motorCount -1;
+
+    activated = true;
+    gripperEndPoseReached = false;
+
 //	ready = true;
-	return true;
+    return true;
 }
 
 
 int ArmKatana::init(const char* host, const char* confFile)
-{  
+{
     //----------------------------------------------------------------//
     //open device: a ethernet port is opened in this case
     //----------------------------------------------------------------//
-    
-    
+
+
     port = 5566;
-    
+
     std::strcpy(ip, host);
     strcpy(cfAddress, confFile);
-    
+
     device.reset(new CCdlSocket(ip, port));
-    
+
     std::cout << "-------------------------------------------\n";
     std::cout << "success:  port " << port << " open\n";
     std::cout << "-------------------------------------------\n";
-    
+
     //--------------------------------------------------------//
     //init protocol:
     //--------------------------------------------------------//
-    
+
     protocol.reset(new CCplSerialCRC());
     std::cout << "-------------------------------------------\n";
     std::cout << "success: protocol class instantiated\n";
@@ -131,136 +131,111 @@ int ArmKatana::init(const char* host, const char* confFile)
     std::cout << "-------------------------------------------\n";
     std::cout << "success: communication with Katana initialized\n";
     std::cout << "-------------------------------------------\n";
-    
-    
+
+
     //--------------------------------------------------------//
     //init robot:
     //--------------------------------------------------------//
     katana.reset(new CLMBase());
     katana->create(cfAddress, protocol.get());
-    
+
     std::cout << "-------------------------------------------\n";
     std::cout << "success: katana initialized\n";
     std::cout << "-------------------------------------------\n";
-    
+
     initiated = true;
-    
+
     //set protected members
     motorCount = katana->getNumberOfMotors();
     jointCount = motorCount -1;
     gripperId = motorCount -1;
-    
+
     activated = true;
     gripperEndPoseReached = false;
-    
+
     return 0;
 }
 
-
-bool ArmKatana::isCalibrated()
-{
-  try {
-  
-  katana->openGripper();
-  katana->closeGripper();
-  
-  } catch(Exception &e) {
-    if(e.error_number() == -19){
-      return false;
-    }
-    else {
-		cout << "Error number:" << e.error_number() << endl;
-		std::cout << "ERROR: " << e.message() << std::endl;
-		return false;  
-    }
-  }
-  
-  return true;
-}
-
-
 bool ArmKatana::calibrate()
 {
-  std::cout << std::endl;
-  std::cout << "Calibrating Katana... ";
-  katana->calibrate();
-  std::cout << "finished." << std::endl;
-  
-  currentArmPosition = CALIBRATED;
-  setVelocity(20);
-    
-  return 0;
-}
+    std::cout << std::endl;
+    std::cout << "Calibrating Katana... ";
+    katana->calibrate();
+    std::cout << "finished." << std::endl;
 
+    currentArmPosition = CALIBRATED;
+    setVelocity(40);
+
+    return 0;
+}
 
 void ArmKatana::kinToK4DRad(const std::vector< double >& kin, std::vector< double >& k4d) const
 {
-      k4d.resize(kin.size());
-      
-      for (uint i=0; i< kin.size(); i++)
-      {
-	k4d[i] = kinToK4DRad(i+1, (double) kin[i]);
-      }
-}
+    k4d.resize(kin.size());
 
+    for (uint i=0; i< kin.size(); i++)
+    {
+        k4d[i] = kinToK4DRad(i+1, (double) kin[i]);
+    }
+}
 
 double ArmKatana::kinToK4DRad(int joint, const double angle) const
 {
-      if(joint <1 || joint > jointCount){
-	std::cout << "\n Error: The joint number is not correct";
-	return 0;
-      }
-      
-      switch(joint){
-	case 1:
-	  return (double) angle + M_PI;
-	  break;
-	case 2:
-	  return (double) angle;
-	  break;
-	case 3:
-	  return (double) angle + M_PI;
-	  break;
-	case 4:
-	  return (double) M_PI/2 - angle;
-	  break;
-	case 5:
-	  return (double) (3/2)*M_PI - angle;
-	  break;
-      }
-      return 0;
+    if(joint <1 || joint > jointCount) {
+        std::cout << "\n Error: The joint number is not correct";
+        return 0;
+    }
+
+    switch(joint) {
+    case 1:
+        return (double) angle + M_PI;
+        break;
+    case 2:
+        return (double) angle;
+        break;
+    case 3:
+        return (double) angle + M_PI;
+        break;
+    case 4:
+        return (double) M_PI/2 - angle;
+        break;
+    case 5:
+        return (double) (3/2)*M_PI - angle;
+        break;
+    }
+    return 0;
 }
 
 
 double ArmKatana::kinToK4DDeg(const int joint, const double angle) const
 {
- if(joint <1 || joint > jointCount){
-	std::cout << "\n Error: The joint number is not correct";
-	return 0;
-      }
-      
-      switch (joint)
-      {
-        case 1:
-	  return (double) (angle + 180);
-	case 2:
-	  return (double) (angle);
-	case 3:
-	  return (double) (angle + 180);
-	case 4:
-	  return (double) (90 - angle);
-	case 5:
-	  return (double) (270 - angle);
-	default:
-	  return 0;
-      }
+    if(joint <1 || joint > jointCount) {
+        std::cout << "\n Error: The joint number is not correct";
+        return 0;
+    }
+
+    switch (joint)
+    {
+    case 1:
+        return (double) (angle + 180);
+    case 2:
+        return (double) (angle);
+    case 3:
+        return (double) (angle + 180);
+    case 4:
+        return (double) (90 - angle);
+    case 5:
+        return (double) (270 - angle);
+    default:
+        return 0;
+    }
 }
 
 /*
 void ArmKatana::kinToK4DDeg(const std::vector< double >& kin, std::vector< double >& k4d) const
 {
       k4d.resize(kin.size());
-      
+
       for (uint i=0; i< kin.size(); i++)
       {
 	k4d[i] = kinToK4DDeg(i+1, (double) kin[i]);
@@ -271,7 +246,7 @@ void ArmKatana::kinToK4DDeg(const std::vector< double >& kin, std::vector< doubl
 void ArmKatana::convertDegsToRads(std::vector< double >& degrees, std::vector< double >& radians) const
 {
   radians.resize(degrees.size());
-  
+
   for(uint i =0; i<degrees.size(); i++){
     radians[i] = (double) (M_PI * degrees[i]) / 180;
   }
@@ -306,33 +281,33 @@ int ArmKatana::convertJointRadToEnc(uint32_t motorId, double jointAngle)
 int ArmKatana::executeEncodersIncrementPath(std::list< std::vector< int > > path)
 {
   //TODO BUG de alguna forma tienen problemas para leer
-  
+
   std::list< std::vector< int > >::iterator it;
   std::vector<int>::iterator it_increment;
   short int i;
   int count = 0;
   int steps =0;
   //int stepsCount;
-  
+
   if (verbose)
     std::cout << "Executing Path with increments on encoders...\n";
-  
+
   if (path.size() == 0)
     return 0;
-  
-  
+
+
   if (path.begin()->size() != motorCount){
     std::cout << "Warning!: Encoders increment do not have the right size.\n";
   }
-  
-  steps = path.size(); 
-  cout << "Number of steps:" << steps << endl; 
-  
+
+  steps = path.size();
+  cout << "Number of steps:" << steps << endl;
+
   for(it = path.begin(); it != path.end(); it++){
     i = 0;
     //cout << "a\n";
     for(it_increment = it->begin(); it_increment != it->end(); it_increment ++){
-      
+
       //cout << "b\n";
       if(*it_increment != 0){
 	std::cout << "Movement:" << count << " motor:" << i << " encoder:" << *it_increment << endl;
@@ -346,10 +321,10 @@ int ArmKatana::executeEncodersIncrementPath(std::list< std::vector< int > > path
       //cout << "i:" << i << endl;
     }
   }
-  
+
   if (verbose)
     std::cout << "Done.\n";
-  
+
   return 1;
 } */
 /*
@@ -375,43 +350,43 @@ void ArmKatana::convertJointsEncToRad(std::vector< double >& angles, const std::
 
 double ArmKatana::computePhi(double x, double y)
 {
-  double resultadoPhi,n1;
-  resultadoPhi = atan2(y,x)+(90*(M_PI/180));  
-  
-  if(resultadoPhi > M_PI) {
-    n1 = ((2*M_PI) - (resultadoPhi))*-1;
-    return n1;
-  }
-  else{
-    return resultadoPhi;
-  }
+    double resultadoPhi,n1;
+    resultadoPhi = atan2(y,x)+(90*(M_PI/180));
+
+    if(resultadoPhi > M_PI) {
+        n1 = ((2*M_PI) - (resultadoPhi))*-1;
+        return n1;
+    }
+    else {
+        return resultadoPhi;
+    }
 }
 
 double ArmKatana::computeTheta(double z, double x)
 {
-  double resultadoTheta,n2;
-  resultadoTheta = (90*(M_PI/180))-atan2(z,x);
-  return resultadoTheta;
+    double resultadoTheta,n2;
+    resultadoTheta = (90*(M_PI/180))-atan2(z,x);
+    return resultadoTheta;
 }
 
 
 void ArmKatana::computeOrientation(double x, double y, double z, double &phi, double &theta)
 {
-  phi = computePhi(x,y);
-  theta = computeTheta(z,x);
+    phi = computePhi(x,y);
+    theta = computeTheta(z,x);
 }
 
 
 void ArmKatana::computeApproachingPos(double x, double y, double z, double& xa, double& ya, double& za)
 {
-  double h,ha,angulo;
-  double distancia=100;
-  angulo = atan2(y,x);
-  h = sqrt(pow(x,2)+pow(y,2));
-  ha = h - distancia;
-  xa = ha * cos(angulo);
-  ya = ha * sin(angulo);
-  za = z; 
+    double h,ha,angulo;
+    double distancia=100;
+    angulo = atan2(y,x);
+    h = sqrt(pow(x,2)+pow(y,2));
+    ha = h - distancia;
+    xa = ha * cos(angulo);
+    ya = ha * sin(angulo);
+    za = z;
 }
 
 /*
@@ -421,18 +396,18 @@ void ArmKatana::getHTMPositionAndOrientation(mrpt::poses::CPoint3D &pos, mrpt::p
   double phi, theta, psi;
   katana->getCoordinates(x , y , z, phi, theta, psi);
   mrpt::poses::CPose3D rotation;
-  
+
   //z rotation by phi;
   orientation.setFromValues( 0, 0, 0, phi, 0, 0);
-  
+
   //x rotation by theta;
   rotation.setFromValues(0,0,0,0,0,theta);
   orientation = rotation + orientation;
-  
+
   //z rotation by psi;
   rotation.setFromValues(0,0,0,psi,0,0);
   orientation = rotation + orientation;
-  
+
   pos.m_coords[0] = x;
   pos.m_coords[1] = y;
   pos.m_coords[2] = z;
@@ -444,27 +419,27 @@ void ArmKatana::getHTMPositionAndOrientation(mrpt::poses::CPoint3D& pos, mrpt::p
   double phi, theta, psi;
   std::vector<double> pose;
   katana->getCoordinatesFromEncoders(pose, encoders);
-  
+
   x= pose[0];
   y = pose[1];
   z = pose[2];
   phi = pose[3];
   theta = pose[4];
   psi = pose[5];
-  
+
   mrpt::poses::CPose3D rotation;
-  
+
   //z rotation by phi;
   orientation.setFromValues( 0, 0, 0, phi, 0, 0);
-  
+
   //x rotation by theta;
   rotation.setFromValues(0,0,0,0,0,theta);
   orientation = rotation + orientation;
-  
+
   //z rotation by psi;
   rotation.setFromValues(0,0,0,psi,0,0);
   orientation = rotation + orientation;
-  
+
   pos.m_coords[0] = x;
   pos.m_coords[1] = y;
   pos.m_coords[2] = z;
@@ -476,64 +451,65 @@ void ArmKatana::getPose3DFromEncoders(mrpt::poses::CPose3D& pose3D, std::vector<
   double phi, theta, psi;
   std::vector<double> pose;
   katana->getCoordinatesFromEncoders(pose, encoders);
-  
+
   x= pose[0];
   y = pose[1];
   z = pose[2];
   phi = pose[3];
   theta = pose[4];
   psi = pose[5];
-  
+
   mrpt::poses::CPose3D rotation;
-  
+
   //z rotation by phi;
   pose3D.setFromValues( 0, 0, 0, phi, 0, 0);
-  
+
   //x rotation by theta;
   rotation.setFromValues(0,0,0,0,0,theta);
   pose3D = rotation + pose3D;
-  
+
   //z rotation by psi;
   rotation.setFromValues(0,0,0,psi,0,0);
   pose3D = rotation + pose3D;
-  
+
   //translation;
   rotation.setFromValues(x,y,z,0,0,0);
   pose3D = rotation + pose3D;
-  
+
 }*/
 
 
 int ArmKatana::getCurrentEncoders(std::vector< int >& encoders)
 {
-   encoders = katana->getRobotEncoders();
+    encoders = katana->getRobotEncoders();
 }
 
 int ArmKatana::getCoordinatesFromEncoders(std::vector< int >& encoders, std::vector< double >& coordinates)
 {
-  katana->getCoordinatesFromEncoders(coordinates, encoders);
-  return 0;
+    katana->getCoordinatesFromEncoders(coordinates, encoders);
+    return 0;
 }
 
 void ArmKatana::openGripper()
 {
-  katana->openGripper();
+    katana->openGripper();
 }
 
 void ArmKatana::closerGripper()
 {
-  katana->closeGripper();
+    katana->closeGripper();
 }
 
 
 void ArmKatana::setVelocity(short int vel)
 {
-  short velocity = vel;
-    
+    short velocity = vel;
+
     //std::cout << "\n\nSet maximum velocity for motors to: \n";
     for(short motorNumber = 0; motorNumber < katana->getNumberOfMotors(); ++motorNumber) {
-      //std::cout << motorNumber+1 << ": ";
-      //std::cin >> velocity;
-      katana->setMotorVelocityLimit(motorNumber, velocity);
+        //std::cout << motorNumber+1 << ": ";
+        //std::cin >> velocity;
+        katana->setMotorVelocityLimit(motorNumber, velocity);
     }
 }
+
