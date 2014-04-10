@@ -423,7 +423,7 @@ void Kinect_Plugin::Main()
 
         if(sharedMemory->getInstance().getAction()=="computePoint")
         {
-          cout<<"Starting: "<< sharedMemory->getInstance().getAction() << "STATE in Kinect"<<endl;  
+          cout<<"Starting: "<< sharedMemory->getInstance().getAction() << " STATE in Kinect"<<endl;  
             do
             {
                 usleep(5000);
@@ -436,7 +436,9 @@ void Kinect_Plugin::Main()
 	    sharedMemory->getInstance().setRealObjectPositionY(y);
 	    sharedMemory->getInstance().setRealObjectPositionZ(z);
             std::cout << "ya calcule el punto y obtuve " << sharedMemory->getInstance().getRealObjectPositionX() << "   " << sharedMemory->getInstance().getRealObjectPositionY() << "   " << sharedMemory->getInstance().getRealObjectPositionZ()  << std::endl;
-	    
+	    sharedMemory->getInstance().setObjectPositionX(0);
+	    sharedMemory->getInstance().setObjectPositionY(0);
+	    sharedMemory->getInstance().setAction("graspObject");
 	    //si da un valor atípico 
 	    //TODO revisar, si el objeto si esta en esta coordenadas, esto s epodría ciclar
 	    //if(sharedMemory->getInstance().getRealObjectPositionX()>750 || sharedMemory->getInstance().getRealObjectPositionZ()<200)
@@ -444,10 +446,9 @@ void Kinect_Plugin::Main()
 	      //sharedMemory->getInstance().setAction("recognizeObject");
 	    //}
 	    //else{
-	      sharedMemory->getInstance().setObjectPositionX(0);
-	      sharedMemory->getInstance().setObjectPositionY(0);
+	      
 	       //sharedMemory->getInstance().setAction(cambiar_estado("punto_calculado", "si"));
-	      sharedMemory->getInstance().setAction("graspObject");
+	     
 	    //}
 	    
 	

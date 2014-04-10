@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -g   -shared -Wl,-soname,libVoiceRecognitionServer.so -o ../lib/libVoiceRecognitionServer.so CMakeFiles/VoiceRecognitionServer.dir/main.cpp.o CMakeFiles/VoiceRecognitionServer.dir/NetThread.cpp.o CMakeFiles/VoiceRecognitionServer.dir/gsNetPoll_g++.cpp.o -lpthread -lasound 

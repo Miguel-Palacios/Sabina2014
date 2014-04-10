@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -g   -shared -Wl,-soname,libplugin.so -o libplugin.so CMakeFiles/plugin.dir/coreapi.cpp.o CMakeFiles/plugin.dir/pluginapi.cpp.o CMakeFiles/plugin.dir/pluginmanager.cpp.o -ldl -lpthread 

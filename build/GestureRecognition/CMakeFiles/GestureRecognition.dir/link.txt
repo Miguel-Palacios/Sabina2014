@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -g   -shared -Wl,-soname,libGestureRecognition.so -o ../lib/libGestureRecognition.so CMakeFiles/GestureRecognition.dir/main.cpp.o CMakeFiles/GestureRecognition.dir/HandControl.cpp.o -lOpenNI -lXnVNite_1_5_2 

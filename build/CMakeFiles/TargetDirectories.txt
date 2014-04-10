@@ -1,0 +1,12 @@
+/home/markovito/projects/Sabina2014/build/FaceRecognition/CMakeFiles/FaceRecognition.dir
+/home/markovito/projects/Sabina2014/build/GestureRecognition/CMakeFiles/GestureRecognition.dir
+/home/markovito/projects/Sabina2014/build/Human/CMakeFiles/Human.dir
+/home/markovito/projects/Sabina2014/build/Kinect/CMakeFiles/Kinect.dir
+/home/markovito/projects/Sabina2014/build/Manipulation/CMakeFiles/Manipulation.dir
+/home/markovito/projects/Sabina2014/build/NavigationClient/CMakeFiles/NavigationClient.dir
+/home/markovito/projects/Sabina2014/build/SharedMemory/CMakeFiles/SharedMemory.dir
+/home/markovito/projects/Sabina2014/build/Vision_Objects/CMakeFiles/Vision_Objects.dir
+/home/markovito/projects/Sabina2014/build/VoiceRecognitionServer/CMakeFiles/VoiceRecognitionServer.dir
+/home/markovito/projects/Sabina2014/build/VoiceSynthesis/CMakeFiles/VoiceSynthesis.dir
+/home/markovito/projects/Sabina2014/build/Plugin_API/CMakeFiles/plugin.dir
+/home/markovito/projects/Sabina2014/build/CMakeFiles/sabina.dir

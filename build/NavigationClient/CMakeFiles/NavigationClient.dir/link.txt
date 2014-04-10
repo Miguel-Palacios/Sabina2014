@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -g   -shared -Wl,-soname,libNavigationClient.so -o ../lib/libNavigationClient.so CMakeFiles/NavigationClient.dir/main.cpp.o -L/usr/local/Arnl/lib -lAriaForArnl -lArNetworkingForArnl -lrt -Wl,-rpath,/usr/local/Arnl/lib 

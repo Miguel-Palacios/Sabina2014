@@ -49,7 +49,7 @@ public:
     
     int testing();
     
-    int init(const char* host, const char* confFile);
+    virtual bool init(const char* host, const char* confFile);
     
     virtual bool init();
     

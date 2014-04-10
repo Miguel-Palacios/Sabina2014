@@ -75,8 +75,8 @@ void Manipulacion::Main()
     
     sleep(5);
     brazo.setVelocity(20);
-    brazo.moveToHanging();
-    brazo.moveToCarriyingPos();
+    //brazo.moveToHanging();
+    brazo.moveToCarriyingPos(true);
     
     
 
@@ -164,9 +164,11 @@ void Manipulacion::Main()
 	    sharedMemory->getInstance().sintetizer.set_Phrase("Delivering object");
 	    sleep(2);
 	    string phrase;
-	    if (sharedMemory->getInstance().getTestRunning()=="Emergency" || sharedMemory->getInstance().getTestRunning()=="CocktailParty"){
+	    if (sharedMemory->getInstance().getTestRunning()=="CocktailParty"){
 	      phrase= sharedMemory->getInstance().getLastObjective().getName() + " Please take the "+ sharedMemory->getInstance().getLastObjective().getOrder()+ " from my gripper";
-	    }else
+	    }else if (sharedMemory->getInstance().getTestRunning()=="Emergency") 
+	      phrase= "Please take the "+ sharedMemory->getInstance().getRequestedObject()+ " from my gripper";
+	    else
 	      phrase= "This is the right position for the "+ sharedMemory->getInstance().getRequestedObject();
 	    
 	    cout<< "FRASE " << phrase<<endl;

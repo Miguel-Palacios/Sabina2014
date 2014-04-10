@@ -101,7 +101,7 @@ bool ArmKatana::init()
 }
 
 
-int ArmKatana::init(const char* host, const char* confFile)
+bool ArmKatana::init(const char* host, const char* confFile)
 {  
     //----------------------------------------------------------------//
     //open device: a ethernet port is opened in this case
@@ -153,7 +153,7 @@ int ArmKatana::init(const char* host, const char* confFile)
     activated = true;
     gripperEndPoseReached = false;
     
-    return 0;
+    return true;
 }
 
 

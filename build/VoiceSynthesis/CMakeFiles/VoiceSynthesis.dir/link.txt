@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -g   -shared -Wl,-soname,libVoiceSynthesis.so -o ../lib/libVoiceSynthesis.so CMakeFiles/VoiceSynthesis.dir/main.cpp.o 

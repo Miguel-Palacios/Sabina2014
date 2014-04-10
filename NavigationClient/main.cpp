@@ -238,7 +238,9 @@ void NavigationClient::Main()
     char *arguments[argsNumber];
     arguments[0]="./arg_test";
     arguments[1]="-host";
-    arguments[2]="10.41.42.1";
+    //arguments[2]="10.41.42.1";
+    //se puede poner también patrolbot
+    arguments[2]="77.7.27.1";
 
   int robotCase, counter;
 	
@@ -334,10 +336,10 @@ void NavigationClient::Main()
 		}if (action=="navigateToParty"){
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
 		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
-		    sleep(2);
+		    sleep(6);
 		    sharedMemory->getInstance().startDownToRotations=false;
 		    sharedMemory->getInstance().sintetizer.set_Phrase("If you need something please wave your hand to my bottom kinect");
-		    sleep(6);
+		    sleep(8);
 		    indexHeading=0;
 		    sharedMemory->getInstance().setAction("turn");
 		   
@@ -345,18 +347,12 @@ void NavigationClient::Main()
 		else if (action=="navigateBackToEmergency"){
 		    
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
-		    system("pdflatex ../data/EmergencyReport/EmergencyReport.tex");
+		    
 		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
-		    sleep(3);
-		    std::stringstream ss;
-		    ss << "cp ../data/EmergencyReport/EmergencyReport.pdf " << sharedMemory->getInstance().reportPath;
-		    system(ss.str().c_str());
-		    sharedMemory->getInstance().setAction("none");
-		    sharedMemory->sintetizer.set_Phrase("Emergency Situation resolved");
-
+		     // sharedMemory->sintetizer.set_Phrase("Emergency Situation resolved");
+		    sharedMemory->getInstance().setAction("createReport");
 			
-		}
-		else if (action=="navigateToEntrance"){
+		}else if (action=="navigateToEntrance"){
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
 		    sharedMemory->getInstance().sintetizer.set_Phrase("Do not worry, I have called the ambulance");
 			  sleep(2);

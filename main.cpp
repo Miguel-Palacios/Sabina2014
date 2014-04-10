@@ -245,7 +245,8 @@ int main ( int argc, char *argv[] )
    //  sharedMemory->getInstance().setAction("payAttention");
     //sharedMemory->getInstance().setAction("reconocer_objetor");
      sharedMemory->getInstance().mainSystem = true;
-     sharedMemory->getInstance().setRequestedObject("water");
+     sharedMemory->getInstance().setRequestedObject("coke");
+     //sharedMemory->getInstance().setAction("createReport");
 //     //Debe ser leido desde el archivo de configuración
      sharedMemory->getInstance().setNumberOfUsersToLearn(2);
      sharedMemory->getInstance().setActionCalibration(doCalibration);

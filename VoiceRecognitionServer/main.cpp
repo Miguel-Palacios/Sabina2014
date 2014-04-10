@@ -478,7 +478,7 @@ void VoiceRecognitionServer::Main()
 			
 			string name = "";
 			string drink = "";
-			string place = "";
+			//string place = "";
 		        
 			cout<<"Starting: "<< action << " STATE in VoiceRecognitionServer"<<endl;  
 			numberOfUsersToLearn++;
@@ -510,16 +510,17 @@ void VoiceRecognitionServer::Main()
 			
 			// Request for a place
 			
-			order = name + ", Can you tell me the place where the " + drink + " is?" ;
-			CleanSpeech(net);
-			net->messages.clear();
-			TextToSpeech(order,round(order.length()/12));
-			place = LoopRecognize("REQstartPlaces",net, "place");
+// 			order = name + ", Can you tell me the place where the " + drink + " is?" ;
+// 			CleanSpeech(net);
+// 			net->messages.clear();
+// 			TextToSpeech(order,round(order.length()/12));
+// 			place = LoopRecognize("REQstartPlaces",net, "place");
 			
 // 			order = "Well "+ name + ", you want a " + drink + ", that is in the " + place;
 // 			TextToSpeech(order,2);
 // 			
-			sharedMemory->getInstance().setStringDestination(place); ;
+			//TEST destino predefinido
+			sharedMemory->getInstance().setStringDestination("kitchen"); ;
 			sharedMemory->getInstance().setRequestedObject(drink);
 			
 			sharedMemory->getInstance().lastObjective->setName(name);
@@ -537,7 +538,7 @@ void VoiceRecognitionServer::Main()
 			//sharedMemory->getInstance().lastObjective;
 			sharedMemory->getInstance().addUser(*tempObjective);
 			
-			order = "Well "+ name + ", you want a " + drink + ", that is in the " + place;
+			order = "Well "+ name + ", i will bring you a " + drink;
 			TextToSpeech(order,5);
 			
 			//el mayor esta en caso de que se inicie mal el sistema y no se indique en memoria compartida el número de usuarios, i.. es cero.
@@ -638,7 +639,7 @@ void VoiceRecognitionServer::Main()
 			if (object!="anything"){
 			  sharedMemory->getInstance().sintetizer.set_Phrase(object);
 			  //TODO the real object is changed for coke because test (object recognition) 
-			  sharedMemory->getInstance().setRequestedObject("coke");
+			  sharedMemory->getInstance().setRequestedObject(object);
 			  sharedMemory->getInstance().setStringDestination("dining");
 			  sharedMemory->getInstance().setAction("navigateToObject");
 			}else{
@@ -672,14 +673,23 @@ void VoiceRecognitionServer::Main()
 		else if (action =="navigateBackToEmergency"){
 			string object = "";
 			string init = "";
-			cout<<"Starting: "<< action << " STATE in VoiceRecognitionServer"<<endl;  
-			sleep(2);
-			sharedMemory->getInstance().sintetizer.set_Phrase("My boss had an accident ?");
+			cout<<"Starting: "<< action << " STATE in VoiceRecognitionServer"<<endl; 
 			sleep(4);
-			
-			
-				
-	
+			sharedMemory->getInstance().sintetizer.set_Phrase("My boss had an accident");
+			sleep(4);
+		}else if(action=="createReport"){
+			sharedMemory->getInstance().sintetizer.set_Phrase("Creating report");
+			sleep(2);
+			system("pdflatex ../data/EmergencyReport/EmergencyReport.tex -output-directory=../data/EmergencyReport/");
+			sleep(6);
+			std::stringstream ss;
+			//ss << "cp ../data/EmergencyReport/EmergencyReport.pdf " << sharedMemory->getInstance().reportPath;
+			ss << "cp ../build/EmergencyReport.pdf " << sharedMemory->getInstance().reportPath;
+			system(ss.str().c_str());
+			sleep(2);
+			sharedMemory->getInstance().sintetizer.set_Phrase("Report has been created, thank you");
+			sleep(2);
+			sharedMemory->getInstance().setAction("none");
 		}
 	}
     usleep(100);

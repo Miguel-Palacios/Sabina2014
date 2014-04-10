@@ -15,9 +15,9 @@
 \section{Map of the environment}
 This is the mape of the environment where Sabina is looking for somebody.
 
-\begin{figure}[h]
+\begin{figure}
 	\begin{center}
-		\includegraphics[width=1\textwidth]{map.png}
+		\includegraphics[width=1\textwidth]{../data/EmergencyReport/map.png}
 		\caption{Global Map}
 	\end{center}
 \end{figure}
@@ -27,7 +27,7 @@ The map shows the location where the person was found when he had an accident.
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=1\textwidth]{locationPeersonHurt.png}
+		\includegraphics[width=1\textwidth]{../data/EmergencyReport/locationPeersonHurt.png}
 		\caption{The red circle indicates the location of the injured person}
 	\end{center}
 \end{figure}
@@ -38,7 +38,7 @@ This are the images of the person found.
 
 \begin{figure}[h]
 	\begin{center}
-		\includegraphics[width=1\textwidth]{imgPeersonHurt.png}
+		\includegraphics[width=1\textwidth]{../data/EmergencyReport/imgPeersonHurt.png}
 		\caption{This is an image showing the persons condition}
 	\end{center}
 \end{figure}

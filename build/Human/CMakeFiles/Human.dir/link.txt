@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -g   -shared -Wl,-soname,libHuman.so -o libHuman.so CMakeFiles/Human.dir/Human.cpp.o CMakeFiles/Human.dir/joint.cpp.o CMakeFiles/Human.dir/ConfigFile.cpp.o 

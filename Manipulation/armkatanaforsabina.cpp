@@ -28,7 +28,7 @@ ArmKatanaForSabina::ArmKatanaForSabina(): ArmKatana()
 
 bool ArmKatanaForSabina::init(const char* host, const char* confFile)
 {
-  ArmKatana::init(host,confFile);
+  ArmKatana::init(host, confFile);
   sensorsCtrl= &katana->GetBase()->GetSCT()->arr[0];
   
   carriying_enc.resize(5);
@@ -49,6 +49,33 @@ bool ArmKatanaForSabina::init(const char* host, const char* confFile)
   
   currentArmPosition = UNKNOWN;
 }
+
+
+bool ArmKatanaForSabina::init()
+{
+  ArmKatana::init();
+  
+  sensorsCtrl= &katana->GetBase()->GetSCT()->arr[0];
+  
+  carriying_enc.resize(5);
+  carriying_enc[0] = -6454;
+  carriying_enc[1] =  2400;
+  carriying_enc[2] = -5270;
+  carriying_enc[3] = 30500;
+  carriying_enc[4] = -6323;
+  
+  
+  hanging_enc.resize(5);
+  hanging_enc[0] = 6370;
+  hanging_enc[1] = -4876;
+  hanging_enc[2] = -16604;
+  hanging_enc[3] = 15969;
+  hanging_enc[4] = 5447;
+      
+  
+  currentArmPosition = UNKNOWN;
+}
+
 
 
 bool ArmKatanaForSabina::detectCurrentConfiguration()
@@ -263,26 +290,16 @@ bool ArmKatanaForSabina::graspByApproachingAt(double x, double y, double z)
   }
   
   // return to carriying
-  moveToCarriyingPos(true);/*
-  vector<int> encoders_end(5);
-  encoders_end[0] = -6454 ;
-  encoders_end[1] = 2400 ;
-  encoders_end[2] = -5270 ;
-  encoders_end[3] = 30500 ;
-  encoders_end[4] = -6323 ;
-  //encoders[5] = 12240 ;
-  katana->moveRobotToEnc(encoders_end.begin(), encoders_end.end(), true);
-  cout << "done grasping" << endl;
-  currentArmPosition = CARRYING;*/
+  moveToCarriyingPos(true);
   
   } catch(Exception &e) {
 	std::cout << "ERROR: " << e.message() << std::endl;
 	//return -1;
 	katana->unBlock();
-	return 0;
+	return false;
   }
   
-  return 0;
+  return true;
 }
 
 bool ArmKatanaForSabina::moveToYZPoint(double y, double z, double theta_target)
@@ -420,12 +437,12 @@ bool ArmKatanaForSabina::graspAt(double x, double y, double z)
   
   //corregir punto a uno mas lejano
   double ytemp, ztemp;
-  calculateNewPoint(y,z,30,ytemp,ztemp);
+  calculateNewPoint(y,z,50,ytemp,ztemp);
   cout << "New coordinates:" << ytemp << " " << ztemp << endl;
   y = ytemp;
   z = ztemp;
   
-  moveToYZPoint(y,z);
+  approachToGrasp(x,y,z);
   
   katana->closeGripper(false);
   sleep(9);
@@ -436,7 +453,6 @@ bool ArmKatanaForSabina::graspAt(double x, double y, double z)
   
   cout << "done grasping" << endl;
   currentArmPosition = CARRYING;
-  
   
   return true;
 }
@@ -520,11 +536,11 @@ bool ArmKatanaForSabina::approachToGrasp(double x, double y, double z)
   x = 0.0;
   
   //corregir punto a uno mas lejano
-  double ytemp, ztemp;
-  calculateNewPoint(y,z,30,ytemp,ztemp);
-  cout << "New coordinates:" << ytemp << " " << ztemp << endl;
-  y = ytemp;
-  z = ztemp;
+  //double ytemp, ztemp;
+  //calculateNewPoint(y,z,30,ytemp,ztemp);
+  //cout << "New coordinates:" << ytemp << " " << ztemp << endl;
+  //y = ytemp;
+  //z = ztemp;
   
   // increments to test different approaching angles, over theta
   int k = 10;
@@ -704,18 +720,21 @@ void ArmKatanaForSabina::calculateNextPoint(vector_boost P, double theta, double
 
 bool ArmKatanaForSabina::approximateToTheObject()
 {
-  double advance = 20;
   
-  int graspable_distance = 70;
-
-  int k = 8;
+  int graspable_distance = 70; // distancia a la que sujeta la mano
+  int k = 5; // numero de incrementos
+  double advance = 20; // avance en cada intento mm
+  
   int i = 0;
   bool atCenter = false;
   double x,y,z,phi,theta,psi;
   
-  const TSctDAT* data	= sensorsCtrl->GetDAT();  
+  const TSctDAT* data	= sensorsCtrl->GetDAT();
+  
+  cout << "Approximating to the object." << endl;
   while (i<k){
     i++;
+    cout << i << "/" << k ;
     sensorsCtrl->recvDAT();	//update sensor data7
         
     //------------------------------- Se puede suejetar?
@@ -740,7 +759,7 @@ bool ArmKatanaForSabina::approximateToTheObject()
     P(1) = y;
     P(2) = z;
     calculateNextPoint(P, theta, advance, P1);
-    //cout << P << " " << P1 << endl;
+    cout << " " << P1 << endl;
     moveToYZPoint(P1(1),P1(2),theta);
   }
   

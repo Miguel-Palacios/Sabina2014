@@ -334,10 +334,10 @@ void NavigationClient::Main()
 		}if (action=="navigateToParty"){
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
 		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
-		    sleep(2);
+		    sleep(6);
 		    sharedMemory->getInstance().startDownToRotations=false;
 		    sharedMemory->getInstance().sintetizer.set_Phrase("If you need something please wave your hand to my bottom kinect");
-		    sleep(6);
+		    sleep(8);
 		    indexHeading=0;
 		    sharedMemory->getInstance().setAction("turn");
 		   
@@ -345,18 +345,12 @@ void NavigationClient::Main()
 		else if (action=="navigateBackToEmergency"){
 		    
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
-		    system("pdflatex ../data/EmergencyReport/EmergencyReport.tex");
+		    
 		    navigateTo(sharedMemory->getInstance().getStringDestination(), &client);
-		    sleep(3);
-		    std::stringstream ss;
-		    ss << "cp ../data/EmergencyReport/EmergencyReport.pdf " << sharedMemory->getInstance().reportPath;
-		    system(ss.str().c_str());
-		    sharedMemory->getInstance().setAction("none");
-		    sharedMemory->sintetizer.set_Phrase("Emergency Situation resolved");
-
+		     // sharedMemory->sintetizer.set_Phrase("Emergency Situation resolved");
+		    sharedMemory->getInstance().setAction("createReport");
 			
-		}
-		else if (action=="navigateToEntrance"){
+		}else if (action=="navigateToEntrance"){
 		    cout<<"Starting: "<< action << "STATE in NavigationClient"<<endl;  
 		    sharedMemory->getInstance().sintetizer.set_Phrase("Do not worry, I have called the ambulance");
 			  sleep(2);
@@ -390,6 +384,7 @@ void NavigationClient::Main()
 		  sharedMemory->getInstance().setAction("recognizeObject");
 		}
 		else if (action=="navigateToObjectCategory"){
+		  //considera que la posición de la categoria de un objeto (en pick and place) es la misma posición que la de donde esta el objeto en emergencia.
 		  cout<<"Starting: "<< action << " STATE in NavigationClient"<<endl; 
 		  //por default ahorita esta dining como el la categoria del objeto
 		  navigateTo(sharedMemory->getInstance().getStringDestination(), &client);

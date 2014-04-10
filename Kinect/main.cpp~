@@ -436,7 +436,9 @@ void Kinect_Plugin::Main()
 	    sharedMemory->getInstance().setRealObjectPositionY(y);
 	    sharedMemory->getInstance().setRealObjectPositionZ(z);
             std::cout << "ya calcule el punto y obtuve " << sharedMemory->getInstance().getRealObjectPositionX() << "   " << sharedMemory->getInstance().getRealObjectPositionY() << "   " << sharedMemory->getInstance().getRealObjectPositionZ()  << std::endl;
-	    
+	    sharedMemory->getInstance().setObjectPositionX(0);
+	    sharedMemory->getInstance().setObjectPositionY(0);
+	    sharedMemory->getInstance().setAction("graspObject");
 	    //si da un valor atípico 
 	    //TODO revisar, si el objeto si esta en esta coordenadas, esto s epodría ciclar
 	    //if(sharedMemory->getInstance().getRealObjectPositionX()>750 || sharedMemory->getInstance().getRealObjectPositionZ()<200)
@@ -444,10 +446,9 @@ void Kinect_Plugin::Main()
 	      //sharedMemory->getInstance().setAction("recognizeObject");
 	    //}
 	    //else{
-	      sharedMemory->getInstance().setObjectPositionX(0);
-	      sharedMemory->getInstance().setObjectPositionY(0);
+	      
 	       //sharedMemory->getInstance().setAction(cambiar_estado("punto_calculado", "si"));
-	      sharedMemory->getInstance().setAction("graspObject");
+	     
 	    //}
 	    
 	
@@ -490,18 +491,12 @@ void Kinect_Plugin::Main()
 	       Location temp=getPointInMap(sharedMemory->getInstance().getRobotPosition());
 	       sharedMemory->getInstance().lastObjective->setObjectivePosition(temp);
 	      
-	      sharedMemory->getInstance().setStringDestination("bedroom1");
-	      sharedMemory->getInstance().setAction("navigateCloseTo");
+	      //sharedMemory->getInstance().setStringDestination("bedroom1");
+	      //sharedMemory->getInstance().setAction("navigateCloseTo");
+	      sharedMemory->getInstance().setAction("navigateToPoint");
 	     }else{
 	       sharedMemory->getInstance().sintetizer.set_Phrase("I have seen a guest requesting");
 	        sharedMemory->getInstance().startDownToRotations=false;
-// 	       cv::Mat mapa;
-// 	       mapa= cv::imread("../data/map.png");
-// 	       cv::Scalar color= cv::Scalar(0,0,255);
-// 	       cv::circle(mapa, cv::Point((sharedMemory->getInstance().getRobotPosition().get_X()/50)+170,(sharedMemory->getInstance().getRobotPosition().get_Y()/50)+170), 7, color, 10, 8, 0);
-// 	       cv::imwrite("../data/EmergencyReport/locationPeersonHurt.png",mapa);
-// 	       sleep(1);
-	       //la función ya esta restando un valor (100) a la profundidad dadda por el kinec 
 	       Location temp=getPointInMap(sharedMemory->getInstance().getRobotPosition());
 	       sharedMemory->getInstance().lastObjective->setObjectivePosition(temp);
 	       sharedMemory->getInstance().setAction("navigateToPoint");

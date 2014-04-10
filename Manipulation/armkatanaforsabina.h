@@ -87,6 +87,8 @@ ArmKatanaForSabina();
   bool centerObject();
 
   virtual bool init(const char* host, const char* confFile);
+  
+  virtual bool init();
 
 protected:
   

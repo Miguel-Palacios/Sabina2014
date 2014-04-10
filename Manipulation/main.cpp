@@ -107,6 +107,7 @@ void Manipulacion::Main()
 	  //brazo.testGrasping(0, -180,  500);
 	  //TODO revisar si es algun elemmento transparente el que se va a agarrar
 	  brazo.graspByApproachingAt(0,y,z);
+	 
 	  //brazo.openGripper();
 	  //sleep(4);	
 	  sharedMemory->getInstance().sintetizer.set_Phrase("I have it");
@@ -164,9 +165,11 @@ void Manipulacion::Main()
 	    sharedMemory->getInstance().sintetizer.set_Phrase("Delivering object");
 	    sleep(2);
 	    string phrase;
-	    if (sharedMemory->getInstance().getTestRunning()=="Emergency" || sharedMemory->getInstance().getTestRunning()=="CocktailParty"){
+	    if (sharedMemory->getInstance().getTestRunning()=="CocktailParty"){
 	      phrase= sharedMemory->getInstance().getLastObjective().getName() + " Please take the "+ sharedMemory->getInstance().getLastObjective().getOrder()+ " from my gripper";
-	    }else
+	    }else if (sharedMemory->getInstance().getTestRunning()=="Emergency") 
+	      phrase= "Please take the "+ sharedMemory->getInstance().getRequestedObject()+ " from my gripper";
+	    else
 	      phrase= "This is the right position for the "+ sharedMemory->getInstance().getRequestedObject();
 	    
 	    cout<< "FRASE " << phrase<<endl;
